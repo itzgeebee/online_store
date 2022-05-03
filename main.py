@@ -12,6 +12,9 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 # from forms import CreatePostForm, CreateUserForm, LoginUserForm, CommentForm
 from flask_gravatar import Gravatar
+from flask_mail import Mail, Message
+from threading import Thread
+
 
 login_manager = LoginManager()
 app = Flask(__name__)
@@ -19,8 +22,17 @@ login_manager.init_app(app)
 app.config['SECRET_KEY'] = "secretkey"
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = ""
+app.config['MAIL_PASSWORD'] = ""
 db = SQLAlchemy(app)
+mail_sender = Mail(app)
 
+def send_email(app, msg):
+    with app.app_context():
+        mail_sender.send(msg)
 
 class Product(db.Model):
     __tablename__ = "products"
@@ -29,6 +41,9 @@ class Product(db.Model):
     product_name = db.Column(db.String(250), nullable=False)
     product_description = db.Column(db.String(2000), nullable=False)
     category = db.Column(db.String(250), nullable=False)
+    price = db.Column(db.String(250), nullable=False)
+    # pic_data = db.Column(db.LargeBinary, nullable=False)  # Actual data, needed for Download
+    img_url = db.Column(db.String(500), nullable=False)  # Data to render the pic in browser
     # reviews = db.relationship("Review", back_populates="product_name")
     order = db.relationship("Order", back_populates="product_name")
 
@@ -44,7 +59,7 @@ class Customer(UserMixin, db.Model):
     city = db.Column(db.String(250), nullable=False)
     zip = db.Column(db.String(250), nullable=False)
     phone = db.Column(db.String(50), nullable=False)
-    mail = db.Column(db.String(250), nullable=False)
+    mail = db.Column(db.String(250), nullable=False, unique=True)
     password = db.Column(db.String(500), nullable=False)
     # reviews = db.relationship("Review", back_populates="customer_name")
     order = db.relationship("Order", back_populates="customer_name")
@@ -93,6 +108,8 @@ class Order(db.Model):
 @app.route("/", methods=["GET", "POST"])
 def home():
     all_products = Product.query.all()
+
+
     rez = []
     for i in all_products:
         result = i.to_dict()
@@ -100,6 +117,117 @@ def home():
 
     products_json = jsonify(products=rez).json
     return products_json
+
+
+@app.route("/product", methods=["GET", "POST"])
+def product():
+
+    product_id = request.args.get("id")
+    specific_product = Product.query.get(product_id)
+    if specific_product:
+        # print(specific_product.to_dict())
+        products_json = jsonify(product=specific_product.to_dict()).json
+        return products_json
+    else:
+        return jsonify({"error": "not found"}), 404
+
+
+@app.route("/search", methods=["POST"])
+def search():
+    product_id = request.form.get("product")
+    query_result = db.session.query(Product).filter(
+        Product.product_name.like(f"{product_id}%") | Product.product_description.like(f"{product_id}%")
+        | Product.category.like(f"{product_id}%")
+    )
+    if query_result:
+        result_list = []
+        for i in query_result:
+            rez = i.to_dict()
+            result_list.append(rez)
+        products_json = jsonify(product=result_list).json
+        return products_json
+    else:
+        return jsonify({"error": "not found"}), 404
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        full_name = request.form.get("full-name")
+        street = request.form.get("street")
+        city = request.form.get("city")
+        zip = request.form.get("zip")
+        phone = request.form.get("phone")
+        mail = request.form.get("mail")
+        password = request.form.get("password")
+
+        new_user = Customer(mail=mail,
+                        password=generate_password_hash(password, method='pbkdf2'
+                                                                         ':sha256',
+                                                        salt_length=8),
+                        full_name=full_name,
+                        street=street,
+                        city=city,
+                        zip=zip,
+                        phone=phone
+                        )
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+        except IntegrityError:
+            error = "email already exists"
+            return jsonify(error=error).json
+        else:
+            login_user(new_user, remember=True)
+            return jsonify({"message": "Success"}).json
+
+
+customer = Customer.query.get(1)
+print("my name is ", customer.mail)
+
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        user_email = request.form.get("mail")
+        user_password = request.form.get("password")
+        user = Customer.query.filter_by(mail=user_email).first()
+        if not user:
+            return jsonify({"error": "email not found"}).json
+        else:
+            if check_password_hash(pwhash=user.password, password=user_password):
+                login_user(user, remember=True)
+                return jsonify({"message": "success"}).json
+            else:
+                return jsonify({"error": "invalid password"}).json
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        mail = request.form.get("mail")
+        user = Customer.query.filter_by(mail=mail).first()
+        if not user:
+            return jsonify({"error": "email not found"}).json
+        else:
+            msg = Message()
+            msg.subject = "reset password"
+            msg.recipients = [user.mail]
+            msg.body = f"follow this lik to reset your password"
+
+            Thread(target=send_email, args=(app, msg)).start()
+            return jsonify({"message": "success"}).json
+
+            # with mail_sender.record_messages() as outbox:
+            #
+            #     mail_sender.send_message(subject='testing',
+            #                       body='test',
+            #                       recipients=emails)
+            #
+            #     assert len(outbox) == 1
+            #     assert outbox[0].subject == "testing"
+
+
+
+
 
 
 if __name__ == "__main__":
