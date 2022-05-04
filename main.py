@@ -1,5 +1,7 @@
 from functools import wraps
 import os
+from time import time
+
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
@@ -14,25 +16,25 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from flask_gravatar import Gravatar
 from flask_mail import Mail, Message
 from threading import Thread
+from itsdangerous import TimedSerializer as serializer
+import jwt
 
 
 login_manager = LoginManager()
 app = Flask(__name__)
 login_manager.init_app(app)
-app.config['SECRET_KEY'] = "secretkey"
+app.config['SECRET_KEY'] = os.urandom(10)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///test.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = ""
-app.config['MAIL_PASSWORD'] = ""
+app.config['MAIL_USERNAME'] = os.getenv("EMAIL")
+app.config['MAIL_PASSWORD'] = os.environ.get("EMAIL_PASSWORD")
+app.config['MAIL_DEFAULT_SENDER'] = "noreply@laptohaven.com"
 db = SQLAlchemy(app)
 mail_sender = Mail(app)
 
-def send_email(app, msg):
-    with app.app_context():
-        mail_sender.send(msg)
 
 class Product(db.Model):
     __tablename__ = "products"
@@ -63,6 +65,22 @@ class Customer(UserMixin, db.Model):
     password = db.Column(db.String(500), nullable=False)
     # reviews = db.relationship("Review", back_populates="customer_name")
     order = db.relationship("Order", back_populates="customer_name")
+
+    def get_token(self, expires_sec=300):
+        return jwt.encode({'reset_password': self.mail,
+                           'exp': time() + expires_sec},
+                            key=app.config['SECRET_KEY'])
+
+    @staticmethod
+    def verify_token(token):
+        try:
+            user = jwt.decode(token,algorithms="HS256",
+                              key=app.config["SECRET_KEY"])['reset_password']
+        except Exception as e:
+            print(e)
+            return None
+        return Customer.query.filter_by(mail=user).first()
+
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
@@ -105,11 +123,24 @@ class Order(db.Model):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
+def send_email(user):
+
+    tok = user.get_token()
+    msg = Message()
+    msg.subject = "reset password"
+    msg.recipients = [user.mail]
+    msg.body = f"follow this link to reset your password {tok}"
+    mail_sender.send(msg)
+
+
+@login_manager.user_loader
+def load_user(id):
+    return Customer.query.get(id)
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     all_products = Product.query.all()
-
-
     rez = []
     for i in all_products:
         result = i.to_dict()
@@ -200,6 +231,7 @@ def login():
             else:
                 return jsonify({"error": "invalid password"}).json
 
+
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
@@ -208,12 +240,8 @@ def forgot_password():
         if not user:
             return jsonify({"error": "email not found"}).json
         else:
-            msg = Message()
-            msg.subject = "reset password"
-            msg.recipients = [user.mail]
-            msg.body = f"follow this lik to reset your password"
-
-            Thread(target=send_email, args=(app, msg)).start()
+            send_email(user)
+            # Thread(target=send_email, args=(app, msg)).start()
             return jsonify({"message": "success"}).json
 
             # with mail_sender.record_messages() as outbox:
@@ -224,6 +252,42 @@ def forgot_password():
             #
             #     assert len(outbox) == 1
             #     assert outbox[0].subject == "testing"
+
+
+@login_required
+@app.route("/reset-password", methods=["GET", "POST", "PUT"])
+def password_reset():
+    if request.method == "POST":
+        mail = request.form.get("mail")
+        old_password = request.form.get("old-password")
+        new_password = request.form.get("new-password")
+        confirm_password = request.form.get("confirm-password")
+        print(confirm_password)
+        user = Customer.query.filter_by(mail=mail).first()
+        if check_password_hash(pwhash=user.password, password=old_password):
+            if new_password == confirm_password:
+                user.password = generate_password_hash(new_password, method='pbkdf2'
+                                                                         ':sha256',
+                                                        salt_length=8)
+                db.session.commit()
+                return jsonify({"message": "Success"})
+            else:
+                return jsonify({"error": "passwords do not match"}), 404
+
+        else:
+            return jsonify({"error": "invalid old password"}), 404
+
+        # if new_password == confirm_password:
+
+@app.route("/reset-password/<token>", methods=["GET", "POST", "PUT"])
+def verify_reset(token):
+    user = Customer.verify_token(token)
+    if user is None:
+        return jsonify({"error": "invalid or expired token"}), 404
+    print(user)
+    return jsonify({"message": "Success"})
+
+
 
 
 
