@@ -1,5 +1,5 @@
 import pandas as pd
-from main import db, Product
+from run import db, Product
 
 
 class RawData:
