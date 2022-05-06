@@ -1,6 +1,5 @@
 from functools import wraps
 import os
-import stripe
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -25,7 +24,7 @@ app.config['MAIL_USERNAME'] = os.getenv("EMAIL")
 app.config['MAIL_PASSWORD'] = os.environ.get("EMAIL_PASSWORD")
 app.config['MAIL_DEFAULT_SENDER'] = "noreply@laptohaven.com"
 app.config['STRIPE_PUBLIC_KEY'] = os.environ["STRIPE_PUBLIC"]
-app.config['STRIPE_SECRET_KEY'] = os.environ.get("STRIP_PRIVATE")
+app.config['STRIPE_SECRET_KEY'] = os.environ.get("STRIPE_PRIVATE")
 db = SQLAlchemy(app)
 mail_sender = Mail(app)
 

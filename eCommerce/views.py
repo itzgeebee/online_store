@@ -9,7 +9,9 @@ from sqlalchemy.exc import IntegrityError
 from eCommerce import db
 from threading import Thread
 from datetime import date
+import stripe
 
+stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
 
 def send_email(user):
@@ -177,10 +179,56 @@ def verify_reset(token):
     return jsonify({"message": "Success"})
 
 
-@app.route("/buy")
-def buy_product():
-    pass
 
+@app.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+
+
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[{
+                              'price_data': {
+                                'currency': 'usd',
+                                'product_data': {
+                                  'name': 'T-shirt',
+                                },
+                                'unit_amount': 20000,
+                              },
+                              'quantity': 1,
+                        }],
+            mode='payment',
+            success_url=url_for("success", _external=True),
+            cancel_url=url_for("cancel", _external=True),
+        )
+    except Exception as e:
+        return str(e)
+
+    return redirect(checkout_session.url, code=303)
+
+
+@app.route("/cancel")
+def cancel():
+    return jsonify({"error": "Something wrong with payment"})
+
+
+@app.route("/success", methods=["POST"])
+def success():
+    order = Order()
+    order.customer_name = current_user.name
+
+    user_bought = [
+        {
+            "id": 3,
+            "qty": 2,
+
+        }
+    ]
+    for i in user_bought:
+        product_bought = Product.query.get(i["id"])
+        product_bought.quantity = product_bought.quantity - i["qty"]
+        db.session.commit()
+
+    return jsonify({"error": "Something wrong with payment"})
 
 
 
