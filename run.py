@@ -1,4 +1,4 @@
-from eCommerce import app
+from online_store import app, db
 
 
 if __name__ == "__main__":
