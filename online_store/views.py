@@ -12,8 +12,6 @@ from datetime import date
 import stripe
 from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, ResetPassword
 
-
-
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
 
@@ -22,7 +20,8 @@ def send_email(user):
     msg = Message()
     msg.subject = "reset password"
     msg.recipients = [user.mail]
-    msg.body = f"follow this link to reset your password {tok}"
+    msg.body = f"follow this link to reset your password " \
+               f"{url_for('verify_reset', token=tok)}"
     mail_sender.send(msg)
 
 
@@ -34,16 +33,15 @@ def load_user(id):
 @app.route("/", methods=["GET", "POST"])
 def home():
     page = request.args.get("page", 1, type=int)
-    all_prods = Product.query.paginate(per_page=10, page=page)
+    all_prods = Product.query.paginate(per_page=64, page=page)
 
     prod_list = []
     for i in all_prods.items:
         prod = i.to_dict()
         prod_list.append(prod)
 
-    return render_template("index.html", prods=prod_list, pages=all_prods)
-
-
+    return render_template("index.html", prods=prod_list, pages=all_prods,
+                           logged_in=current_user.is_authenticated)
 
 
 @app.route("/product", methods=["GET", "POST"])
@@ -69,7 +67,8 @@ def search():
             rez = i.to_dict()
             result_list.append(rez)
 
-        return render_template("index.html", prods=result_list, pages=query_result, logged_in=current_user.is_authenticated)
+        return render_template("index.html", prods=result_list, pages=query_result,
+                               logged_in=current_user.is_authenticated)
     else:
         error = "Nothing found"
         return redirect(url_for("home", error=error))
@@ -113,7 +112,7 @@ def register():
                     return redirect(url_for('product', id=prod))
                 return redirect(url_for('home'))
         else:
-            error="confirm password doesn't match password"
+            error = "confirm password doesn't match password"
             return redirect(url_for("register", error=error))
     return render_template("register.html", form=reg_form, logged_in=current_user.is_authenticated)
 
@@ -123,7 +122,7 @@ def login():
     login_form = LoginUserForm()
     prod = request.args.get("prod")
     if login_form.validate_on_submit():
-        user_email = login_form.email
+        user_email = login_form.email.data
         user_password = login_form.password.data
         user = Customer.query.filter_by(mail=user_email).first()
         if not user:
@@ -133,11 +132,10 @@ def login():
                 login_user(user, remember=True)
                 if prod:
                     return redirect(url_for('product', id=prod))
-                return redirect(url_for('home'))
+                return redirect(url_for('home', name=user.first_name))
             else:
                 return redirect(url_for("login", error="Invalid password"))
-    return render_template("register.html", form=login_form, logged_in=current_user.is_authenticated)
-
+    return render_template("login.html", form=login_form, logged_in=current_user.is_authenticated)
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
@@ -146,20 +144,13 @@ def forgot_password():
         mail = request.form.get("mail")
         user = Customer.query.filter_by(mail=mail).first()
         if not user:
-            return jsonify({"error": "email not found"}).json
+            return redirect(url_for('forgot_password', error="email not found"))
         else:
-            # send_email(user)
-            Thread(target=send_email, args=user).start()
-            return jsonify({"message": "success"}).json
+            send_email(user)
+            # Thread(target=send_email, args=user).start()
+            return render_template("verify-email.html")
 
-            # with mail_sender.record_messages() as outbox:
-            #
-            #     mail_sender.send_message(subject='testing',
-            #                       body='test',
-            #                       recipients=emails)
-            #
-            #     assert len(outbox) == 1
-            #     assert outbox[0].subject == "testing"
+    return render_template("forgot-password.html")
 
 
 @app.route("/reset-password", methods=["GET", "POST", "PUT"])
@@ -188,28 +179,64 @@ def password_reset():
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def verify_reset(token):
+    reset_form = ResetPassword()
     user = Customer.verify_token(token)
     if user is None:
         return jsonify({"error": "invalid or expired token"}), 404
+    if reset_form.validate_on_submit():
+        new_password = reset_form.new_password.data
+        confirm_password = reset_form.confirm_password.data
+        if new_password == confirm_password:
+            user.password = generate_password_hash(new_password,
+                                                   method='pbkdf2'
+                                                          ':sha256',
+                                                   salt_length=8)
+            db.session.commit()
+            login_user(user)
+            return redirect(url_for('home'))
+        else:
+            return redirect(url_for("verify_reset", error="passwords do not match"))
+    return render_template("reset-password.html", form=reset_form,
+                           logged_in=current_user.is_authenticated)
 
-    return render_template("reset-password.html", logged_in=current_user.is_authenticated)
+
+@app.route('/account')
+@login_required
+def account():
+    user_id = request.args.get("user_id")
+    customer = Customer.query.get(user_id)
+    all_orders = customer.order
+    for i in all_orders:
+        print(i.quantity)
+    # cust = customer.to_dict()
+
+    return render_template("accounts.html", user=customer,
+                           logged_in=current_user.is_authenticated)
+
 
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('home'))
 
+
 @app.route('/create-checkout-session', methods=['POST'])
 @login_required
 def create_checkout_session():
     prod_id = request.form.get("prod_id")
-    qty = request.form.get("qty")
-    print(qty)
+    qty = int(request.form.get("qty"))
+    if qty < 1:
+        error = "quantity should not be less than 1"
+        return redirect(url_for("product", id=prod_id, error=error))
     strt = request.form.get("strt")
     cty = request.form.get("city")
     to_zip = request.form.get("zip")
     product_to_buy = Product.query.get(prod_id)
-    print(product_to_buy)
+    qty_left = product_to_buy.quantity
+    if qty > qty_left:
+        print(qty_left)
+        error = f"Sorry we only have {qty_left} quantity left"
+        return redirect(url_for("product", id=prod_id, error=error))
 
     try:
         checkout_session = stripe.checkout.Session.create(
@@ -249,7 +276,6 @@ def cancel():
 def success():
     prod_id = int(request.args.get("prod_id"))
     prod = Product.query.get(prod_id)
-    print(prod)
     qty = request.args.get("qty")
     strt = request.args.get("strt")
     cty = request.args.get("cty")
@@ -268,4 +294,3 @@ def success():
     db.session.commit()
 
     return jsonify({"Success": "Payment Successful"})
-

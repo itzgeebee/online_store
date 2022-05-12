@@ -34,7 +34,7 @@ class Customer(UserMixin, db.Model):
     mail = db.Column(db.String(250), nullable=False, unique=True)
     password = db.Column(db.String(500), nullable=False)
     # reviews = db.relationship("Review", back_populates="customer_name")
-    order = db.relationship("Order", back_populates="customer_name", cascade="all, delete")
+    order = db.relationship("Order", back_populates="customer_name")
 
     def get_token(self, expires_sec=300):
         return jwt.encode({'reset_password': self.mail,
