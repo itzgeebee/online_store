@@ -1,6 +1,6 @@
 from functools import wraps
 import os
-from flask import Flask
+from flask import Flask, session
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import  LoginManager
@@ -8,6 +8,7 @@ from flask_login import  LoginManager
 from flask_gravatar import Gravatar
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask.ext.session import Session
 
 
 file_path = os.path.abspath(os.getcwd())+"/test.db"

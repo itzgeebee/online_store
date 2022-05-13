@@ -10,7 +10,7 @@ from online_store import db
 from threading import Thread
 from datetime import date
 import stripe
-from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, ResetPassword
+from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, ResetPassword, EditUserForm
 
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
@@ -39,9 +39,9 @@ def home():
     for i in all_prods.items:
         prod = i.to_dict()
         prod_list.append(prod)
-
+    page_url = 'home'
     return render_template("index.html", prods=prod_list, pages=all_prods,
-                           logged_in=current_user.is_authenticated)
+                           logged_in=current_user.is_authenticated, page_url=page_url)
 
 
 @app.route("/product", methods=["GET", "POST"])
@@ -66,9 +66,33 @@ def search():
         for i in query_result.items:
             rez = i.to_dict()
             result_list.append(rez)
+        page_url = "search"
+    else:
+        error = "Nothing found"
+        return redirect(url_for("home", error=error))
+    return render_template("index.html", prods=result_list, pages=query_result,
+                           logged_in=current_user.is_authenticated, page_url=page_url)
 
-        return render_template("index.html", prods=result_list, pages=query_result,
-                               logged_in=current_user.is_authenticated)
+
+@app.route("/filter", methods=["GET", "POST"])
+def filter():
+    page = request.args.get("page", 1, type=int)
+    min_price = request.form.get("min")
+    max_price = request.form.get("max")
+    category = request.form.get("flexRadioDefault")
+    print(category)
+    filter_result = Product.query.filter(
+        Product.price > min_price,
+        Product.price < max_price,
+        Product.category == category).paginate(per_page=40, page=page)
+    if filter_result:
+        result_list = []
+        for i in filter_result.items:
+            rez = i.to_dict()
+            result_list.append(rez)
+        page_url = 'filter'
+        return render_template("index.html", prods=result_list, pages=filter_result,
+                               logged_in=current_user.is_authenticated, page_url=page_url)
     else:
         error = "Nothing found"
         return redirect(url_for("home", error=error))
@@ -157,10 +181,11 @@ def forgot_password():
 @login_required
 def password_reset():
     user_id = request.args.get("user_id")
-    if request.method == "POST":
-        old_password = request.form.get("old-password")
-        new_password = request.form.get("new-password")
-        confirm_password = request.form.get("confirm-password")
+    np_form = ChangePassword()
+    if np_form.validate_on_submit():
+        old_password = np_form.old_password.data
+        new_password = np_form.new_password.data
+        confirm_password = np_form.confirm_password.data
         if new_password == confirm_password:
             user = Customer.query.get(user_id)
             if check_password_hash(pwhash=user.password, password=old_password):
@@ -168,13 +193,16 @@ def password_reset():
                                                                             ':sha256',
                                                        salt_length=8)
                 db.session.commit()
-                return redirect(url_for('account', message="Password changed"))
+                return redirect(url_for('account', user_id=user_id,
+                                        message="Password changed"))
             else:
-                return jsonify({"error": "invalid old password"}), 404
+                error = "Invalid old password"
+                return redirect(url_for("password_reset", error=error))
         else:
             error = "confirm password does not match new password"
             return redirect(url_for("password_reset", error=error))
-    return render_template('reset-password.html', logged_in=current_user.is_authenticated)
+    return render_template('new-password.html', form=np_form,
+                           logged_in=current_user.is_authenticated)
 
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
@@ -205,12 +233,41 @@ def verify_reset(token):
 def account():
     user_id = request.args.get("user_id")
     customer = Customer.query.get(user_id)
-    all_orders = customer.order
-    for i in all_orders:
-        print(i.quantity)
+    # all_orders = customer.order
+    # for i in all_orders:
+    #     print(i.quantity)
     # cust = customer.to_dict()
 
     return render_template("accounts.html", user=customer,
+                           logged_in=current_user.is_authenticated)
+
+
+@app.route('/edit-profile', methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    user_id = request.args.get("user_id")
+    user = Customer.query.get(user_id)
+    eu_form = EditUserForm(
+        email=user.mail,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        street=user.street,
+        city=user.city,
+        zip=user.zip,
+        phone=user.phone
+    )
+    if eu_form.validate_on_submit():
+        user.mail = eu_form.email.data
+        user.first_name = eu_form.first_name.data
+        user.last_name = eu_form.last_name.data
+        user.street = eu_form.street.data
+        user.city = eu_form.city.data
+        user.zip = eu_form.zip.data
+        user.phone = eu_form.phone.data
+        db.session.commit()
+        return redirect(url_for("account", user_id=user_id,
+                                message="Profile update successful"))
+    return render_template("edit-profile.html", form=eu_form,
                            logged_in=current_user.is_authenticated)
 
 

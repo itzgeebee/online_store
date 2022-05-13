@@ -4,26 +4,26 @@
         <div class="row">
         <div class="col-lg-4">
           <h3>filters</h3>
-          <form class="" action="" method="post">
+          <form class="" action="{{url_for('filter')}}" method="post">
             <div class="col-auto">
               <label for="min-price" class="form-label" >Min price</label>
-              <input id="min-price" type="number" class="form-control" value="40000">
+              <input id="min-price" type="number" class="form-control" value="40000" name="min">
             </div>
             <div class="col-auto">
               <label for="max-price" class="form-label">Max price</label>
-              <input id="max-price" type="number" class="form-control" value="2000000">
+              <input id="max-price" type="number" class="form-control" value="2000000", name="max">
             </div>
             <div class="form-check">
               <h4>Category</h4>
-              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" value="Laptop">
               <label class="form-check-label" for="flexRadioDefault1">
                 Laptops
               </label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+              <input class="form-check-input" type="radio" name="flexRadioDefault"  value="Phone" checked>
               <label class="form-check-label" for="flexRadioDefault2">
-                Iphones
+                Phones
               </label>
             </div>
             <button type="submit" value="submit" class="btn btn-outline-success" name = "submit_btn">Apply</button>
@@ -75,9 +75,9 @@
   {%if page_num:%}
     {%if pages.page == page_num:%}
 
-      <a class="btn btn-dark mb-2" href="{{url_for('home', page=page_num)}}">{{page_num}}</a>
+      <a class="btn btn-dark mb-2" href="{{url_for(page_url, page=page_num)}}">{{page_num}}</a>
     {%else:%}
-      <a class="btn btn-outline-dark mb-2" href="{{url_for('home', page=page_num)}}">{{page_num}}</a>
+      <a class="btn btn-outline-dark mb-2" href="{{url_for(page_url, page=page_num)}}">{{page_num}}</a>
     {%endif%}
   {%else:%}
     ...
