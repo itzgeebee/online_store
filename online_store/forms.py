@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, EmailField, TextAreaField, BooleanField, DateField, \
-    SelectField, IntegerField
+    SelectField, IntegerField, URLField
 from wtforms.validators import DataRequired, URL, Length
 
 
@@ -45,4 +45,14 @@ class EditUserForm(FlaskForm):
     city = StringField("City", validators=[DataRequired(), Length(min=2)])
     zip = StringField("Zip", validators=[DataRequired(), Length(min=2, max=8)])
     phone = StringField("Phone", validators=[DataRequired(), Length(min=2, max=12)])
+    submit = SubmitField("Submit")
+
+
+class UploadForm(FlaskForm):
+    quantity = IntegerField("Quantity", validators=[DataRequired()], default=100)
+    product_name = StringField("Product name", validators=[DataRequired()])
+    product_description = StringField("Description", validators=[DataRequired()])
+    category = SelectField("Category", choices=["Phone", "Laptop"], validators=[DataRequired()])
+    price = IntegerField("Price", validators=[DataRequired()])
+    img_url = URLField("Image url", validators=[DataRequired()])
     submit = SubmitField("Submit")

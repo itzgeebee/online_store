@@ -171,8 +171,8 @@ def forgot_password():
             return redirect(url_for('forgot_password', error="email not found"))
         else:
             send_email(user)
-            # Thread(target=send_email, args=user).start()
-            return render_template("verify-email.html")
+            mesg = "Check your email for link to change password"
+            return render_template("feedback.html", txt=mesg)
 
     return render_template("forgot-password.html")
 
@@ -201,7 +201,7 @@ def password_reset():
         else:
             error = "confirm password does not match new password"
             return redirect(url_for("password_reset", error=error))
-    return render_template('new-password.html', form=np_form,
+    return render_template('edit.html', form=np_form,
                            logged_in=current_user.is_authenticated)
 
 
@@ -224,7 +224,7 @@ def verify_reset(token):
             return redirect(url_for('home'))
         else:
             return redirect(url_for("verify_reset", error="passwords do not match"))
-    return render_template("reset-password.html", form=reset_form,
+    return render_template("edit.html", form=reset_form,
                            logged_in=current_user.is_authenticated)
 
 
@@ -233,10 +233,6 @@ def verify_reset(token):
 def account():
     user_id = request.args.get("user_id")
     customer = Customer.query.get(user_id)
-    # all_orders = customer.order
-    # for i in all_orders:
-    #     print(i.quantity)
-    # cust = customer.to_dict()
 
     return render_template("accounts.html", user=customer,
                            logged_in=current_user.is_authenticated)
@@ -267,7 +263,7 @@ def edit_profile():
         db.session.commit()
         return redirect(url_for("account", user_id=user_id,
                                 message="Profile update successful"))
-    return render_template("edit-profile.html", form=eu_form,
+    return render_template("edit.html", form=eu_form,
                            logged_in=current_user.is_authenticated)
 
 
@@ -325,7 +321,8 @@ def create_checkout_session():
 
 @app.route("/cancel")
 def cancel():
-    return jsonify({"error": "Something wrong with payment"})
+    mesg = "Transaction failed, please check your payment details and try again"
+    return render_template("feedback.html", txt=mesg)
 
 
 @app.route("/success", methods=["GET", "POST"])
@@ -349,5 +346,5 @@ def success():
     prod.quantity -= int(qty)
     db.session.add(order)
     db.session.commit()
-
-    return jsonify({"Success": "Payment Successful"})
+    mesg = "Transaction Successful. Thanks for patronizing"
+    return render_template("feedback.html", txt=mesg)
