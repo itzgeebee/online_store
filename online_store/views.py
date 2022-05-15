@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, session
 from online_store.models import Customer, Product, Order
 from werkzeug.exceptions import abort
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,6 +13,11 @@ import stripe
 from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, ResetPassword, EditUserForm
 
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
+
+
+def send_mail(app, msg):
+    with app.app_context():
+        mail_sender.send(msg)
 
 
 def send_email(user):
@@ -32,6 +37,7 @@ def load_user(id):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    # session.pop("search")
     page = request.args.get("page", 1, type=int)
     all_prods = Product.query.paginate(per_page=64, page=page)
 
@@ -41,7 +47,8 @@ def home():
         prod_list.append(prod)
     page_url = 'home'
     return render_template("index.html", prods=prod_list, pages=all_prods,
-                           logged_in=current_user.is_authenticated, page_url=page_url)
+                           logged_in=current_user.is_authenticated, page_url=page_url
+                           )
 
 
 @app.route("/product", methods=["GET", "POST"])
@@ -55,11 +62,17 @@ def product():
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
+    if request.method == "POST":
+        product_id = request.form.get("product")
+        session['search'] = product_id
+    else:
+        if "search" in session:
+            product_id = session.get("search")
+
     page = request.args.get("page", 1, type=int)
-    product_id = request.form.get("product")
     query_result = db.session.query(Product).filter(
         Product.product_name.like(f"{product_id}%") | Product.product_description.like(f"{product_id}%")
-        | Product.category.like(f"{product_id}%")).paginate(per_page=20, page=page)
+        | Product.category.like(f"{product_id}%")).paginate(per_page=40, page=page)
 
     if query_result:
         result_list = []
@@ -71,20 +84,31 @@ def search():
         error = "Nothing found"
         return redirect(url_for("home", error=error))
     return render_template("index.html", prods=result_list, pages=query_result,
-                           logged_in=current_user.is_authenticated, page_url=page_url)
+                           logged_in=current_user.is_authenticated, page_url=page_url
+                           )
 
 
 @app.route("/filter", methods=["GET", "POST"])
 def filter():
+    if request.method == "POST":
+        min_price = request.form.get("min")
+        max_price = request.form.get("max")
+        category = request.form.get("flexRadioDefault")
+        session["min"] = min_price
+        session["max"] = max_price
+        session["category"] = category
+
+    else:
+        if "min" in session:
+            min_price = session["min"]
+            max_price = session["max"]
+            category = session["category"]
+
     page = request.args.get("page", 1, type=int)
-    min_price = request.form.get("min")
-    max_price = request.form.get("max")
-    category = request.form.get("flexRadioDefault")
-    print(category)
     filter_result = Product.query.filter(
         Product.price > min_price,
         Product.price < max_price,
-        Product.category == category).paginate(per_page=40, page=page)
+        Product.category == category).paginate(per_page=56, page=page)
     if filter_result:
         result_list = []
         for i in filter_result.items:
@@ -92,7 +116,8 @@ def filter():
             result_list.append(rez)
         page_url = 'filter'
         return render_template("index.html", prods=result_list, pages=filter_result,
-                               logged_in=current_user.is_authenticated, page_url=page_url)
+                               logged_in=current_user.is_authenticated, page_url=page_url
+                               )
     else:
         error = "Nothing found"
         return redirect(url_for("home", error=error))
@@ -347,4 +372,19 @@ def success():
     db.session.add(order)
     db.session.commit()
     mesg = "Transaction Successful. Thanks for patronizing"
+    template = f"<html>" \
+               f"<h2>Receipt</h2>\n <p>Your receipt from Laptohaven</p> \n" \
+               f"<ul><li>Product: {prod.product_description}</li>" \
+               f"<li>Price: {prod.price}</li>" \
+               f"<li>Price:Quantity: {qty}</li>" \
+               f"<li>Date: {date.today().strftime('%d %b, %Y')}</li>" \
+               f"</ul>" \
+               f"</html>"
+
+    msg = Message()
+    msg.subject = "Receipt from laptohaven"
+    msg.recipients = [current_user.mail]
+    msg.body = 'Thanks for your patronage, do come again'
+    msg.html = template
+    Thread(target=send_mail, args=(app, msg)).start()
     return render_template("feedback.html", txt=mesg)

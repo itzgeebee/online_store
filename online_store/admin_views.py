@@ -1,5 +1,5 @@
 import os
-from flask import render_template, redirect, url_for, request, send_file
+from flask import render_template, redirect, url_for, request, send_file,session
 from online_store.models import Customer, Product, Order
 from werkzeug.exceptions import abort
 from online_store import app, login_manager
