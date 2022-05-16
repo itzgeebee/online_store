@@ -1,5 +1,5 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify, session
-from online_store.models import Customer, Product, Order
+from flask import render_template, make_response, redirect, url_for, flash, request, jsonify, session
+from online_store.models import Customer, Product, Order, OrderDetails
 from werkzeug.exceptions import abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from online_store import app, mail_sender, login_manager
@@ -10,7 +10,8 @@ from online_store import db
 from threading import Thread
 from datetime import date
 import stripe
-from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, ResetPassword, EditUserForm
+from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, \
+    ResetPassword, EditUserForm, CartForm
 
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
@@ -71,8 +72,8 @@ def search():
 
     page = request.args.get("page", 1, type=int)
     query_result = db.session.query(Product).filter(
-        Product.product_name.like(f"{product_id}%") | Product.product_description.like(f"{product_id}%")
-        | Product.category.like(f"{product_id}%")).paginate(per_page=40, page=page)
+        Product.product_name.ilike(f"%{product_id}%") | Product.product_description.ilike(f"%{product_id}%")
+        | Product.category.ilike(f"%{product_id}%")).paginate(per_page=40, page=page)
 
     if query_result:
         result_list = []
@@ -125,7 +126,7 @@ def filter():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    prod = request.args.get("prod")
+    prev_page = request.args.get("prev_page")
     reg_form = CreateUserForm()
     if reg_form.validate_on_submit():
         first_name = reg_form.first_name.data
@@ -157,8 +158,8 @@ def register():
                 return redirect(url_for('login', error=error))
             else:
                 login_user(new_user, remember=True)
-                if prod:
-                    return redirect(url_for('product', id=prod))
+                if prev_page:
+                    return redirect(url_for('cart'))
                 return redirect(url_for('home'))
         else:
             error = "confirm password doesn't match password"
@@ -169,7 +170,7 @@ def register():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     login_form = LoginUserForm()
-    prod = request.args.get("prod")
+    prev_page = request.args.get("prev_page")
     if login_form.validate_on_submit():
         user_email = login_form.email.data
         user_password = login_form.password.data
@@ -179,8 +180,8 @@ def login():
         else:
             if check_password_hash(pwhash=user.password, password=user_password):
                 login_user(user, remember=True)
-                if prod:
-                    return redirect(url_for('product', id=prod))
+                if prev_page:
+                    return redirect(url_for('cart'))
                 return redirect(url_for('home', name=user.first_name))
             else:
                 return redirect(url_for("login", error="Invalid password"))
@@ -258,6 +259,7 @@ def verify_reset(token):
 def account():
     user_id = request.args.get("user_id")
     customer = Customer.query.get(user_id)
+    print(customer.order)
 
     return render_template("accounts.html", user=customer,
                            logged_in=current_user.is_authenticated)
@@ -301,24 +303,19 @@ def logout():
 @app.route('/create-checkout-session', methods=['POST'])
 @login_required
 def create_checkout_session():
-    prod_id = request.form.get("prod_id")
-    qty = int(request.form.get("qty"))
-    if qty < 1:
-        error = "quantity should not be less than 1"
-        return redirect(url_for("product", id=prod_id, error=error))
-    strt = request.form.get("strt")
-    cty = request.form.get("city")
-    to_zip = request.form.get("zip")
-    product_to_buy = Product.query.get(prod_id)
-    qty_left = product_to_buy.quantity
-    if qty > qty_left:
-        print(qty_left)
-        error = f"Sorry we only have {qty_left} quantity left"
-        return redirect(url_for("product", id=prod_id, error=error))
-
-    try:
-        checkout_session = stripe.checkout.Session.create(
-            line_items=[{
+    l1 = session["product_ids"]
+    l2 = session["quantities"]
+    items_to_buy = []
+    for i in range(len(l1)):
+        product_to_buy = Product.query.get(l1[i])
+        qty = int(l2[i])
+        qty_left = product_to_buy.quantity
+        if qty > qty_left:
+            print(qty_left)
+            error = f"Sorry we only have {qty_left} quantity left"
+            return redirect(url_for("cart", error=error))
+        else:
+            line_dict = {
                 'price_data': {
                     'currency': 'usd',
                     'product_data': {
@@ -327,11 +324,18 @@ def create_checkout_session():
                     'unit_amount': product_to_buy.price,
                 },
                 'quantity': qty,
-            }],
+            }
+            items_to_buy.append(line_dict)
+
+    strt = request.form.get("strt")
+    cty = request.form.get("city")
+    to_zip = request.form.get("zip")
+
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            line_items=items_to_buy,
             mode='payment',
             success_url=url_for("success",
-                                prod_id=prod_id,
-                                qty=qty,
                                 strt=strt,
                                 cty=cty,
                                 zip=to_zip,
@@ -353,38 +357,109 @@ def cancel():
 @app.route("/success", methods=["GET", "POST"])
 @login_required
 def success():
-    prod_id = int(request.args.get("prod_id"))
-    prod = Product.query.get(prod_id)
-    qty = request.args.get("qty")
-    strt = request.args.get("strt")
-    cty = request.args.get("cty")
-    to_zip = request.args.get("zip")
-    order = Order(
+    id_list = session["product_ids"]
+    qty_list = session["quantities"]
+
+    customer_order = OrderDetails(
         customer_name=current_user,
-        product_name=prod,
-        quantity=qty,
-        to_street=strt,
-        to_city=cty,
-        zip=to_zip,
+        to_street=request.args.get("strt"),
+        to_city=request.args.get("cty"),
+        zip=request.args.get("zip"),
         order_date=date.today()
     )
-    prod.quantity -= int(qty)
-    db.session.add(order)
+
+    db.session.add(customer_order)
+
+    for i in range(len(id_list)):
+        prod = Product.query.get(id_list[i])
+        prod.quantity -= int(qty_list[i])
+        order = Order(
+            product_name=prod,
+            quantity=int(qty_list[i]),
+            order_name=customer_order
+        )
+        db.session.add(order)
+
     db.session.commit()
+
     mesg = "Transaction Successful. Thanks for patronizing"
-    template = f"<html>" \
-               f"<h2>Receipt</h2>\n <p>Your receipt from Laptohaven</p> \n" \
-               f"<ul><li>Product: {prod.product_description}</li>" \
-               f"<li>Price: {prod.price}</li>" \
-               f"<li>Price:Quantity: {qty}</li>" \
-               f"<li>Date: {date.today().strftime('%d %b, %Y')}</li>" \
-               f"</ul>" \
-               f"</html>"
+
+    # template = f"<html>" \
+    #            f"<h2>Receipt</h2>\n <p>Your receipt from Laptohaven</p> \n" \
+    #            f"<ul><li>Product: {prod.product_description}</li>" \
+    #            f"<li>Price: {prod.price}</li>" \
+    #            f"<li>Price:Quantity: {qty}</li>" \
+    #            f"<li>Date: {date.today().strftime('%d %b, %Y')}</li>" \
+    #            f"</ul>" \
+    #            f"</html>"
 
     msg = Message()
     msg.subject = "Receipt from laptohaven"
     msg.recipients = [current_user.mail]
     msg.body = 'Thanks for your patronage, do come again'
-    msg.html = template
+    # msg.html = template
     Thread(target=send_mail, args=(app, msg)).start()
+    session.pop("product_ids")
+    session.pop("quantities")
     return render_template("feedback.html", txt=mesg)
+
+
+
+
+cart_id = []
+cart_qty = []
+
+
+@app.route("/add-to-cart", methods=['GET', 'POST'])
+def add_to_cart():
+    if request.method == "POST":
+        product_id = request.args.get("prod_id")
+        quantity = request.form.get("quantity")
+
+        if "product_ids" not in session:
+            session["product_ids"] = []
+            session["quantities"] = []
+        id_list = session["product_ids"]
+        id_list.append(product_id)
+        qty_list = session["quantities"]
+        qty_list.append(quantity)
+        session["product_ids"] = id_list
+        session["quantities"] = qty_list
+
+        return redirect(url_for('home'))
+
+
+@app.route('/cart')
+def cart():
+    try:
+        prod_ids = session["product_ids"]
+    except KeyError:
+        return redirect(url_for('home'))
+    if prod_ids == []:
+        return redirect(url_for("home", error="Empty cart, start shopping"))
+    prod_qty = session["quantities"]
+    cart_prods = []
+    calculator_list = []
+    for i in range(len(prod_ids)):
+        prd = Product.query.get(prod_ids[i])
+        qty = int(prod_qty[i])
+        cart_product = {"prod": prd, "qty": qty}
+        price = prd.price * qty
+        calculator_list.append(price)
+        cart_prods.append(cart_product)
+    total = sum(calculator_list)
+    print(total)
+    return render_template("checkout.html", prods=cart_prods, total=total)
+
+
+@app.route("/remove-from-cart")
+def remove_from_cart():
+    prod = int(request.args.get("prod_id"))
+    temp_id_list = session["product_ids"]
+    temp_qty = session["quantities"]
+    temp_id_list.pop(prod)
+    temp_qty.pop(prod)
+    session["product_ids"] = temp_id_list
+    session["quantities"] = temp_qty
+
+    return redirect(url_for("cart"))

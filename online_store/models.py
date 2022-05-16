@@ -13,9 +13,7 @@ class Product(db.Model):
     product_description = db.Column(db.String(200), nullable=False)
     category = db.Column(db.String(30), nullable=False)
     price = db.Column(db.Integer, nullable=False)
-    # pic_data = db.Column(db.LargeBinary, nullable=False)  # Actual data, needed for Download
-    img_url = db.Column(db.String(500), nullable=False)  # Data to render the pic in browser
-    # reviews = db.relationship("Review", back_populates="product_name")
+    img_url = db.Column(db.String(500), nullable=False)
     order = db.relationship("Order", back_populates="product_name")
 
     def to_dict(self):
@@ -33,18 +31,17 @@ class Customer(UserMixin, db.Model):
     phone = db.Column(db.String(20), nullable=False)
     mail = db.Column(db.String(250), nullable=False, unique=True)
     password = db.Column(db.String(500), nullable=False)
-    # reviews = db.relationship("Review", back_populates="customer_name")
-    order = db.relationship("Order", back_populates="customer_name")
+    order = db.relationship("OrderDetails", back_populates="customer_name")
 
     def get_token(self, expires_sec=300):
         return jwt.encode({'reset_password': self.mail,
                            'exp': time() + expires_sec},
-                            key=app.config['SECRET_KEY'])
+                          key=app.config['SECRET_KEY'])
 
     @staticmethod
     def verify_token(token):
         try:
-            user = jwt.decode(token,algorithms="HS256",
+            user = jwt.decode(token, algorithms="HS256",
                               key=app.config["SECRET_KEY"])['reset_password']
         except Exception as e:
             print(e)
@@ -59,12 +56,26 @@ class Order(db.Model):
     __tablename__ = "orders"
     id = db.Column(db.Integer, primary_key=True)
 
-    customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"))
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
-    customer_name = db.relationship("Customer", back_populates="order")
     product_name = db.relationship("Product", back_populates="order")
+    quantity = db.Column(db.Integer, db.CheckConstraint('quantity>0'), nullable=False)
 
-    quantity = db.Column(db.Integer, nullable=False)
+    order_details_id = db.Column(db.Integer, db.ForeignKey("order_details.id"))
+    order_name = db.relationship("OrderDetails", back_populates="order")
+
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
+
+class OrderDetails(db.Model):
+    __tablename__ = "order_details"
+    id = db.Column(db.Integer, primary_key=True)
+
+    customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"))
+    customer_name = db.relationship("Customer", back_populates="order")
+
+    order = db.relationship("Order", back_populates="order_name")
+
     to_street = db.Column(db.String(250), nullable=False)
     to_city = db.Column(db.String(250), nullable=False)
     zip = db.Column(db.String(250), nullable=False)
@@ -72,5 +83,6 @@ class Order(db.Model):
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
 # db.drop_all()
-# db.create_all()
+db.create_all()

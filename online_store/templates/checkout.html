@@ -1,0 +1,67 @@
+{% include "header.html" %}
+
+<section class="laptop-display">
+  <div class="container">
+    {%for prod in prods%}
+    <div class="" >
+        <ul class="">
+          <li class="">Product: {{prod.prod.product_description}}</li>
+          <li class="">Price per unit: {{prod.prod.price}}</li>
+          <li class="">qty {{prod.qty}}</li>
+          <li class="">total price {{prod.prod.price * (prod.qty)}}</li>
+          <li class=""><a class="btn btn-outline-success" role="button" href="{{url_for('remove_from_cart', prod_id=prods.index(prod))}}">remove</a>
+          </li>
+        </ul>
+        {%endfor%}
+      </div>
+      <h4><em> Total amount: {{total}} </em></h4>
+      {%if not current_user.is_authenticated: %}
+    <a href="{{url_for('register', prev_page = 'cart')}}" role="button" class="btn btn-outline-success">Sign up to buy</a>
+    <a href="{{url_for('login', prev_page = 'cart')}}" role="button" class="btn btn-outline-success">or Sign in</a>
+
+    {%else:%}
+    <!-- Button trigger modal -->
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Buy Now
+  </button>
+    {%endif%}
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Checkout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{{url_for('create_checkout_session')}}" class="form-control" method="POST">
+            <div class="mb-3">
+            <label for="strt">Street name</label>
+            <input type="text" name="strt" id="strt" required>
+          </div>
+          <div class="mb-3">
+              <label for="city">city</label>
+              <input type="text" name="city" id="city" required>
+          </div>
+          <div class="mb-3">
+              <label for="number">zip</label>
+              <input type="text" name="zip" id="zip" required>
+          </div>
+            <button class="btn btn-outline-success" type="submit">Checkout</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    </div>
+
+      </div>
+  </section>
+
+<div>
+
+{% include "footer.html" %}
+

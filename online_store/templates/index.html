@@ -7,11 +7,11 @@
           <form class="" action="{{url_for('filter')}}" method="post">
             <div class="col-auto">
               <label for="min-price" class="form-label" >Min price</label>
-              <input id="min-price" type="number" class="form-control" value="40000" name="min">
+              <input id="min-price" type="number" class="form-control" value="{{session['min']}}" name="min">
             </div>
             <div class="col-auto">
               <label for="max-price" class="form-label">Max price</label>
-              <input id="max-price" type="number" class="form-control" value="2000000", name="max">
+              <input id="max-price" type="number" class="form-control" value="{{session['max']}}", name="max">
             </div>
             <div class="form-check">
               <h4>Category</h4>
@@ -52,20 +52,25 @@
         <ul class="list-group list-group-flush">
           <li class="list-group-item">Price: {{product.price}}</li>
           <li class="list-group-item">Category: {{product.category}}</li>
+          
           {%if product.quantity > 0:%}
-          <li class="list-group-item">Quanity left: {{product.quantity}}</li>
-
+          <li class="list-group-item">Quantity left: {{product.quantity}}</li>
+          <li class="list-group-item">
+                <form class="" action="{{url_for('add_to_cart', prod_id=product.id)}}" method="post">
+                  <div class=""></div>
+                  <label for="cart-item">Qty</label>
+                  <input style="width: 20%;" type="number" name="quantity" id="cart-item" min="1" required>
+                  <input class="" type="submit" value="Add to cart">
+                </form>
+          </li>
+        
         </ul>
-        <div class="card-body">
-          <a href="{{url_for('product', id=product.id)}}" role="button" class="card-link btn btn-outline-success">Go to product</a>
-        </div>
         {%else%}
         <li class="list-group-item">Quanity left: Out of Stock</li>
         </ul>
         {%endif%}
       </div>
     </div>
-    
     {%endfor%}
   </div>
 </section>

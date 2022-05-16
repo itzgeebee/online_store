@@ -1,13 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, EmailField, TextAreaField, BooleanField, DateField, \
-    SelectField, IntegerField, URLField
-from wtforms.validators import DataRequired, URL, Length
+from wtforms import StringField, SubmitField, PasswordField, EmailField, \
+    SelectField, IntegerField, URLField, HiddenField
+from wtforms.validators import DataRequired, URL, Length, NumberRange
 
 
 class CreateUserForm(FlaskForm):
     email = EmailField("Email", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired(), Length(min=6, max=30)], id="password_field")
-    # show_password = BooleanField('Show password', id='check')
     confirm_password = PasswordField("confirm password", validators=[DataRequired(), Length(min=6, max=25)])
     first_name = StringField("First Name", validators=[DataRequired(), Length(min=2)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(min=2)])
@@ -49,10 +48,16 @@ class EditUserForm(FlaskForm):
 
 
 class UploadForm(FlaskForm):
-    quantity = IntegerField("Quantity", validators=[DataRequired()], default=100)
+    quantity = IntegerField("Quantity", validators=[DataRequired(), NumberRange(min=1)], default=100)
     product_name = StringField("Product name", validators=[DataRequired()])
     product_description = StringField("Description", validators=[DataRequired()])
     category = SelectField("Category", choices=["Phone", "Laptop"], validators=[DataRequired()])
     price = IntegerField("Price", validators=[DataRequired()])
     img_url = URLField("Image url", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class CartForm(FlaskForm):
+    product_id = HiddenField("product_id", validators=[DataRequired()])
+    quantity = IntegerField("qty", validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField("Submit")
