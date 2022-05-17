@@ -1,6 +1,7 @@
 {% include "header.html" %}
 <section class="intro">
   <div class="container-fluid">
+    
         <div class="row">
         <div class="col-lg-4">
           <h3>filters</h3>
@@ -56,10 +57,11 @@
           {%if product.quantity > 0:%}
           <li class="list-group-item">Quantity left: {{product.quantity}}</li>
           <li class="list-group-item">
-                <form class="" action="{{url_for('add_to_cart', prod_id=product.id)}}" method="post">
+                <form id="kart-form{{product.id}}" data-id="{{product.id}}" class="cart-input" action="{{url_for('add_to_cart')}}" method="post">
                   <div class=""></div>
                   <label for="cart-item">Qty</label>
-                  <input style="width: 20%;" type="number" name="quantity" id="cart-item" min="1" required>
+                  <input type="hidden" name="prod_id" id="prod_id{{product.id}}" value="{{product.id}}">
+                  <input class="" style="width: 20%;" type="number" name="quantity" id="cart-item{{product.id}}" min="1" required>
                   <input class="" type="submit" value="Add to cart">
                 </form>
           </li>

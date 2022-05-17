@@ -5,11 +5,12 @@
     {%for prod in prods%}
     <div class="" >
         <ul class="">
+
           <li class="">Product: {{prod.prod.product_description}}</li>
           <li class="">Price per unit: {{prod.prod.price}}</li>
           <li class="">qty {{prod.qty}}</li>
           <li class="">total price {{prod.prod.price * (prod.qty)}}</li>
-          <li class=""><a class="btn btn-outline-success" role="button" href="{{url_for('remove_from_cart', prod_id=prods.index(prod))}}">remove</a>
+          <li class=""><button id="del-btn" class="del-btn btn btn-outline-success" data-id={{prods.index(prod)}}>remove</button>
           </li>
         </ul>
         {%endfor%}

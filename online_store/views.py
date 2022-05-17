@@ -1,4 +1,6 @@
-from flask import render_template, make_response, redirect, url_for, flash, request, jsonify, session
+import sys
+
+from flask import render_template, redirect, url_for, flash, request, jsonify, session
 from online_store.models import Customer, Product, Order, OrderDetails
 from werkzeug.exceptions import abort
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,7 +13,7 @@ from threading import Thread
 from datetime import date
 import stripe
 from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, \
-    ResetPassword, EditUserForm, CartForm
+    ResetPassword, EditUserForm
 
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
@@ -259,7 +261,6 @@ def verify_reset(token):
 def account():
     user_id = request.args.get("user_id")
     customer = Customer.query.get(user_id)
-    print(customer.order)
 
     return render_template("accounts.html", user=customer,
                            logged_in=current_user.is_authenticated)
@@ -311,7 +312,6 @@ def create_checkout_session():
         qty = int(l2[i])
         qty_left = product_to_buy.quantity
         if qty > qty_left:
-            print(qty_left)
             error = f"Sorry we only have {qty_left} quantity left"
             return redirect(url_for("cart", error=error))
         else:
@@ -412,21 +412,29 @@ cart_qty = []
 
 @app.route("/add-to-cart", methods=['GET', 'POST'])
 def add_to_cart():
+    error = False
+
     if request.method == "POST":
-        product_id = request.args.get("prod_id")
-        quantity = request.form.get("quantity")
+        try:
+            product_id = request.get_json()["prod_id"]
+            quantity = request.get_json()["qty"]
 
-        if "product_ids" not in session:
-            session["product_ids"] = []
-            session["quantities"] = []
-        id_list = session["product_ids"]
-        id_list.append(product_id)
-        qty_list = session["quantities"]
-        qty_list.append(quantity)
-        session["product_ids"] = id_list
-        session["quantities"] = qty_list
+            if "product_ids" not in session:
+                session["product_ids"] = []
+                session["quantities"] = []
+            id_list = session["product_ids"]
+            id_list.append(product_id)
+            qty_list = session["quantities"]
+            qty_list.append(quantity)
+            session["product_ids"] = id_list; session["quantities"] = qty_list
+            print(session["product_ids"])
+        except:
+            error =True
+            print(sys.exc_info())
+        if error:
+            abort(400)
 
-        return redirect(url_for('home'))
+        return jsonify({"message": "Product added to cart"})
 
 
 @app.route('/cart')
@@ -448,13 +456,14 @@ def cart():
         calculator_list.append(price)
         cart_prods.append(cart_product)
     total = sum(calculator_list)
-    print(total)
+
     return render_template("checkout.html", prods=cart_prods, total=total)
 
 
-@app.route("/remove-from-cart")
-def remove_from_cart():
-    prod = int(request.args.get("prod_id"))
+@app.route("/remove-from-cart/<int:prodId>", methods=["DELETE"])
+def remove_from_cart(prodId):
+
+    prod = prodId
     temp_id_list = session["product_ids"]
     temp_qty = session["quantities"]
     temp_id_list.pop(prod)
@@ -462,4 +471,6 @@ def remove_from_cart():
     session["product_ids"] = temp_id_list
     session["quantities"] = temp_qty
 
-    return redirect(url_for("cart"))
+    return jsonify({
+        "success": True
+    })

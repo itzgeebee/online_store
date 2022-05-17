@@ -57,7 +57,3 @@ class UploadForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class CartForm(FlaskForm):
-    product_id = HiddenField("product_id", validators=[DataRequired()])
-    quantity = IntegerField("qty", validators=[DataRequired(), NumberRange(min=1)])
-    submit = SubmitField("Submit")
