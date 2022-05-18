@@ -1,6 +1,9 @@
 {% include "header.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 <div class="container">
+  {%if error != None%}
+  <div class="errors">{{error}}</div>
+  {%endif%}
   <div class="row">
     <div class="col">
         {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}

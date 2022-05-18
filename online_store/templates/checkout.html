@@ -64,5 +64,31 @@
 
 <div>
 
+  <script>
+    const delButtons = document.querySelectorAll(`.del-btn`)
+for (let b of delButtons) {
+    const btn = b;
+    console.log(btn)
+    btn.onclick = function (e) {
+        const prodId = e.target.dataset['id'];
+        console.log('clicked')
+        console.log(prodId)
+        fetch(`/remove-from-cart/${prodId}`, {
+            method: `DELETE`
+        })
+            .then(function (response) {
+                return response.json()
+            })
+            .then(function (jsonResponse) {
+                console.log(jsonResponse)
+                if (jsonResponse) {
+                    console.log("success")
+                    window.location.href = "/cart"
+                }
+            })
+    }
+}
+  </script>
+
 {% include "footer.html" %}
 

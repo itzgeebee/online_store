@@ -40,7 +40,7 @@ def load_user(id):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    # session.pop("search")
+    message = request.args.get("message")
     page = request.args.get("page", 1, type=int)
     all_prods = Product.query.paginate(per_page=64, page=page)
 
@@ -50,7 +50,7 @@ def home():
         prod_list.append(prod)
     page_url = 'home'
     return render_template("index.html", prods=prod_list, pages=all_prods,
-                           logged_in=current_user.is_authenticated, page_url=page_url
+                           logged_in=current_user.is_authenticated, page_url=page_url, message=message
                            )
 
 
@@ -85,7 +85,7 @@ def search():
         page_url = "search"
     else:
         error = "Nothing found"
-        return redirect(url_for("home", error=error))
+        return redirect(url_for("home", message=error))
     return render_template("index.html", prods=result_list, pages=query_result,
                            logged_in=current_user.is_authenticated, page_url=page_url
                            )
@@ -123,11 +123,12 @@ def filter():
                                )
     else:
         error = "Nothing found"
-        return redirect(url_for("home", error=error))
+        return redirect(url_for("home", message=error))
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    error = request.args.get("error")
     prev_page = request.args.get("prev_page")
     reg_form = CreateUserForm()
     if reg_form.validate_on_submit():
@@ -166,11 +167,14 @@ def register():
         else:
             error = "confirm password doesn't match password"
             return redirect(url_for("register", error=error))
-    return render_template("register.html", form=reg_form, logged_in=current_user.is_authenticated)
+    return render_template("register.html", form=reg_form,
+                           logged_in=current_user.is_authenticated,
+                           error=error)
 
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
+    error = request.args.get("error")
     login_form = LoginUserForm()
     prev_page = request.args.get("prev_page")
     if login_form.validate_on_submit():
@@ -187,7 +191,9 @@ def login():
                 return redirect(url_for('home', name=user.first_name))
             else:
                 return redirect(url_for("login", error="Invalid password"))
-    return render_template("login.html", form=login_form, logged_in=current_user.is_authenticated)
+    return render_template("login.html", form=login_form,
+                           logged_in=current_user.is_authenticated,
+                           error=error)
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
@@ -208,6 +214,7 @@ def forgot_password():
 @app.route("/reset-password", methods=["GET", "POST", "PUT"])
 @login_required
 def password_reset():
+    error = request.args.get("error")
     user_id = request.args.get("user_id")
     np_form = ChangePassword()
     if np_form.validate_on_submit():
@@ -230,11 +237,13 @@ def password_reset():
             error = "confirm password does not match new password"
             return redirect(url_for("password_reset", error=error))
     return render_template('edit.html', form=np_form,
-                           logged_in=current_user.is_authenticated)
+                           logged_in=current_user.is_authenticated,
+                           error=error)
 
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def verify_reset(token):
+    error = request.args.get("error")
     reset_form = ResetPassword()
     user = Customer.verify_token(token)
     if user is None:
@@ -253,7 +262,8 @@ def verify_reset(token):
         else:
             return redirect(url_for("verify_reset", error="passwords do not match"))
     return render_template("edit.html", form=reset_form,
-                           logged_in=current_user.is_authenticated)
+                           logged_in=current_user.is_authenticated,
+                           error=error)
 
 
 @app.route('/account')
@@ -404,12 +414,6 @@ def success():
     return render_template("feedback.html", txt=mesg)
 
 
-
-
-cart_id = []
-cart_qty = []
-
-
 @app.route("/add-to-cart", methods=['GET', 'POST'])
 def add_to_cart():
     error = False
@@ -426,10 +430,11 @@ def add_to_cart():
             id_list.append(product_id)
             qty_list = session["quantities"]
             qty_list.append(quantity)
-            session["product_ids"] = id_list; session["quantities"] = qty_list
-            print(session["product_ids"])
+            session["product_ids"] = id_list
+            session["quantities"] = qty_list
+            print(session["product_ids"], session["quantities"])
         except:
-            error =True
+            error = True
             print(sys.exc_info())
         if error:
             abort(400)
@@ -442,9 +447,9 @@ def cart():
     try:
         prod_ids = session["product_ids"]
     except KeyError:
-        return redirect(url_for('home'))
+        return redirect(url_for('home', message="No item in cart yet, start shopping"))
     if prod_ids == []:
-        return redirect(url_for("home", error="Empty cart, start shopping"))
+        return redirect(url_for("home", message="Empty cart, start shopping"))
     prod_qty = session["quantities"]
     cart_prods = []
     calculator_list = []
@@ -462,7 +467,6 @@ def cart():
 
 @app.route("/remove-from-cart/<int:prodId>", methods=["DELETE"])
 def remove_from_cart(prodId):
-
     prod = prodId
     temp_id_list = session["product_ids"]
     temp_qty = session["quantities"]

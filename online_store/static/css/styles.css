@@ -1,0 +1,50 @@
+body{
+    background-color: #E2D784;
+}
+.navigation-bar{
+    padding: 4%;
+}
+.intro {
+    padding: 4%;
+    background-color: white;
+    height: 50%;
+}
+
+.intro-div{
+    padding: 2%;
+    width: 60%;
+    height: 50%;
+}
+
+.filter-div{
+    border: 1px solid black;
+    border-radius:5% ;
+    line-height: 200%;
+    padding: 3%;
+    height: 50%;
+    background-color: white;
+    /* margin: 3%; */
+}
+.car-image {
+    max-width:100%;
+}
+
+.laptop-display{
+    padding:4%;
+}
+
+.display-items{
+    background-color: white;
+    border-radius:2%;
+}
+
+.display-items:hover{
+    transform: scale(1.1);
+}
+
+@media only screen and (max-width: 600px) {
+    body {
+        font-size: 2rem;
+      
+    }
+  }
