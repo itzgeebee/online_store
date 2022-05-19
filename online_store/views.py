@@ -1,7 +1,7 @@
 import sys
 
 from flask import render_template, redirect, url_for, flash, request, jsonify, session
-from online_store.models import Customer, Product, Order, OrderDetails
+from online_store.models import Customer, Product, Order, OrderDetails, Reviews
 from werkzeug.exceptions import abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from online_store import app, mail_sender, login_manager
@@ -14,6 +14,7 @@ from datetime import date
 import stripe
 from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, \
     ResetPassword, EditUserForm
+
 
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
@@ -54,13 +55,20 @@ def home():
                            )
 
 
-@app.route("/product", methods=["GET", "POST"])
+@app.route("/product")
 def product():
     product_id = request.args.get("id")
     specific_product = Product.query.get(product_id)
+    all_reviews = Reviews.query.filter_by(product_id=product_id)
+    if current_user.is_authenticated:
+        print("yes")
+
     if specific_product:
-        prod = specific_product.to_dict()
-        return render_template("product.html", prod=prod, logged_in=current_user.is_authenticated)
+        prod_orders = [i.order_name for i in specific_product.order]
+
+        return render_template("product.html", prod=specific_product,
+                               logged_in=current_user.is_authenticated,
+                               rev=all_reviews, prod_orders=prod_orders)
 
 
 @app.route("/search", methods=["GET", "POST"])
@@ -478,3 +486,36 @@ def remove_from_cart(prodId):
     return jsonify({
         "success": True
     })
+
+@app.route("/add-rating/<prodId>", methods=["POST"])
+@login_required
+def add_rating(prodId):
+    prod = Product.query.get(prodId)
+    error = False
+    try:
+        rating = request.get_json()["rate"]
+        review = request.get_json()["rev"]
+        print(rating)
+        print(review)
+        new_review = Reviews(
+            review=review,
+            rating=rating,
+            customer=current_user,
+            product=prod
+        )
+        db.session.add(new_review)
+        db.session.commit()
+
+
+    except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(400)
+    else:
+        return jsonify({"success": True})
+
+

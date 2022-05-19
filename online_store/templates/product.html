@@ -17,12 +17,84 @@
     </ul>
     
   </div>
+  {%if logged_in %}
+  {%for ord in current_user.order%}
+  {%if ord in prod_orders %}
+  <form action="" method="post" id="review_form" data-id="{{prod.id}}">
+    <label for="rating">Rate product</label>
+    <input type="number" name="rating" id="rating" max="5" min="1" required>
+    <label for="review">Review product</label>
+    <textarea name="review" id="review" cols="30" rows="10" maxlength="150" required>Great Product</textarea>
+     <input class="btn btn-outline-success" type="submit" value="Submit">
+  </form>
+  {%break%}
+  {%endif%}
+  {%endfor%}
+  {%endif%}
+  <div>
+    {%for review in rev%}
+    <ul class="commentList">
+      <li>
+          <div class="commenterImage">
+            <img src="{{ 'zzz.sochi@gmail.com' | gravatar }}">
+          </div>
+          <div class="commentText">
+            <small>Rating: {{review.rating}}</small>
+            <p>{{review.review}}</p>
+
+
+            <span class="date sub-text">{{review.customer.first_name}} {{review.customer.last_name}}  </span>
+             
+          </div>
+      </li>
+    </ul>
+  {%endfor%}
+
+  </div>
+  <script>
+    const Revform = document.getElementById("review_form")
+    console.log(Revform)
+    Revform.onsubmit = function(e) {
+      const prodctId = e.target.dataset["id"]
+
+      e.preventDefault();
+      const rate = document.getElementById("rating").value
+      const rev = document.getElementById("review").value
+      
+      fetch("/add-rating/" + prodctId, {
+        method: "POST",
+        body: JSON.stringify({
+          "rate": rate,
+          "rev": rev
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      .then(function (response) {
+            return response.json();
+        })
+      .then(function (jsonResponse) {
+                console.log(jsonResponse)
+                if (jsonResponse) {
+                    console.log("success")
+                    window.location.href = `/product?id=${prodctId}`
+                }
+              })
+
+      .catch(function () {
+            alert(`Something went wrong`);
+        })
+    }
+  </script>
+
   <script>
     const cartInput = document.querySelector(`.cart-input`);
-console.log(cartInput);
-cartInput.onsubmit = function (e) {
+    console.log(cartInput);
+    cartInput.onsubmit = function (e) {
 
-    const id_num = e.target.dataset['id']
+        const id_num = e.target.dataset['id']
     console.log(id_num)
     console.log(e)
 

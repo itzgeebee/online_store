@@ -34,6 +34,15 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 mail_sender = Mail(app)
 Bootstrap(app)
+gravatar = Gravatar(app,
+                    size=100,
+                    rating='g',
+                    default='retro',
+                    force_default=False,
+                    force_lower=False,
+                    use_ssl=False,
+                    base_url=None)
+app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
 from online_store import views
 from online_store import admin_views

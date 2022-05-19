@@ -1,6 +1,8 @@
 import os
-from flask import render_template, redirect, url_for, request, send_file,session
-from online_store.models import Customer, Product, Order
+from flask import render_template, redirect, url_for, request, send_file, session, jsonify
+from sqlalchemy import asc
+
+from online_store.models import Customer, Product, Order, Reviews
 from werkzeug.exceptions import abort
 from online_store import app, login_manager
 from flask_login import current_user
@@ -189,3 +191,27 @@ def generate_sales():
         print(e)
 
     return send_file(csv_file, as_attachment=True)
+
+
+@app.route("/admin/reviews")
+@admin_only
+def reviews():
+    page = request.args.get("page", 1, type=int)
+    revs = Reviews.query.order_by(asc(Reviews.rating)).paginate(per_page=150, page=page)
+    page_url = "reviews"
+    rev_list = []
+    for i in revs.items:
+        rev = i.to_dict()
+        rev_list.append(rev)
+
+    return render_template("reviews.html", reviews=rev_list,
+                           logged_in=current_user.is_authenticated,
+                           pages=revs, page_url=page_url)
+
+@app.route("/delete-review")
+def delete_review():
+    rev_id = request.args.get("id")
+    rev_to_delete = Reviews.query.get(rev_id)
+    db.session.delete(rev_to_delete)
+    db.session.commit()
+    return redirect(url_for("reviews"))

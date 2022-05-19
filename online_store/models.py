@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_login import UserMixin
 from online_store import db, app, migrate
 import jwt
@@ -15,6 +17,8 @@ class Product(db.Model):
     price = db.Column(db.Integer, nullable=False)
     img_url = db.Column(db.String(500), nullable=False)
     order = db.relationship("Order", back_populates="product_name")
+    reviews = db.relationship("Reviews", backref="product")
+
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
@@ -32,6 +36,7 @@ class Customer(UserMixin, db.Model):
     mail = db.Column(db.String(250), nullable=False, unique=True)
     password = db.Column(db.String(500), nullable=False)
     order = db.relationship("OrderDetails", back_populates="customer_name")
+    reviews = db.relationship("Reviews", backref="customer")
 
     def get_token(self, expires_sec=300):
         return jwt.encode({'reset_password': self.mail,
@@ -83,6 +88,20 @@ class OrderDetails(db.Model):
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
+
+class Reviews(db.Model):
+    __tablename__ = "reviews"
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+    review = db.Column(db.String(150), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, nullable=True)
+
+    def to_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
 
 # db.drop_all()
 db.create_all()
