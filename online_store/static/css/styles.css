@@ -1,13 +1,21 @@
 body{
     background-color: #E2D784;
+    
 }
 .navigation-bar{
     padding: 4%;
 }
 .intro {
-    padding: 4%;
+    padding-top:2%;
+    padding-left:7%;
+    padding-right:7%;
     background-color: white;
     height: 50%;
+    margin-top: 1%;
+}
+
+.msgs{
+    text-align: center;
 }
 
 .intro-div{
@@ -16,35 +24,145 @@ body{
     height: 50%;
 }
 
-.filter-div{
-    border: 1px solid black;
-    border-radius:5% ;
-    line-height: 200%;
-    padding: 3%;
-    height: 50%;
-    background-color: white;
-    /* margin: 3%; */
-}
+
 .car-image {
     max-width:100%;
 }
 
 .laptop-display{
-    padding:4%;
+    padding:2%;
+    margin-left: 10%;
+    display: grid;
+
 }
 
+.grid-item{
+    display: inline-grid;
+}
+
+.filter-div{
+    border: 1px solid black;
+    border-radius:5px ;
+    /* line-height: 200%; */
+    padding: 7%;
+    height: 8%;
+    width: 100%;
+    background-color: white;
+    /* margin: 3%; */
+    grid-column-start: 1;
+    grid-column-end: 2;
+    margin-right:20%;
+    padding-right:10%;
+    position:sticky; top: 9%;
+}
+
+.filter-items {
+    padding-top: 3%;
+}
 .display-items{
     background-color: white;
     border-radius:2%;
+    border: 1px solid black;
+    margin: 1%;
+    padding: 1%;
+
+}
+
+.disp{
+    grid-column-start: 2;
+    grid-column-end: 4;
+    margin-left: 5%;
+    
 }
 
 .display-items:hover{
     transform: scale(1.1);
 }
 
+
+.pages {
+    padding: 5% 8%;
+}
+
+.product-container{
+    padding: 0;
+    border: 0;
+}
+
 @media only screen and (max-width: 600px) {
     body {
-        font-size: 2rem;
+        font-size: 3rem;
       
     }
   }
+
+
+.product-page, .reviews, .review-display{
+    padding-top:2%;
+    padding-bottom: 2%;
+    padding-left: 10%;
+    padding-right: 10%;
+    text-align: left;
+}
+
+.reviews{
+    /* border: 1px solid black; */
+    width: 50%;
+}
+
+.review-input{
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+.commentList {
+    padding:0;
+    list-style:none;
+    max-height:200px;
+    overflow:auto;
+}
+.commentList li {
+    margin:0;
+    margin-top:10px;
+}
+.commentList li > div {
+    display:table-cell;
+}
+.commenterImage {
+    width:30px;
+    margin-right:5px;
+    height:100%;
+    float:left;
+}
+.commenterImage img {
+    width:100%;
+    border-radius:50%;
+}
+.commentText p {
+    margin:0;
+}
+.sub-text {
+    color:#aaa;
+    font-family:verdana;
+    font-size:11px;
+}
+.actionBox {
+    border-top:1px dotted #bbb;
+    padding:10px;
+}
+
+table{
+    border: 2px solid black;
+    text-align: left;  
+  }
+
+.table-items {
+    border: 2px solid black;
+    text-align: left;
+    
+    word-wrap: break-word;
+  }
+
+.checkout-tab {
+    padding: 3%;
+    
+}

@@ -470,7 +470,8 @@ def cart():
         cart_prods.append(cart_product)
     total = sum(calculator_list)
 
-    return render_template("checkout.html", prods=cart_prods, total=total)
+    return render_template("checkout.html", prods=cart_prods,
+                           total=total, logged_in=current_user.is_authenticated)
 
 
 @app.route("/remove-from-cart/<int:prodId>", methods=["DELETE"])

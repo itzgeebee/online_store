@@ -35,7 +35,7 @@ migrate = Migrate(app, db)
 mail_sender = Mail(app)
 Bootstrap(app)
 gravatar = Gravatar(app,
-                    size=100,
+                    size=50,
                     rating='g',
                     default='retro',
                     force_default=False,

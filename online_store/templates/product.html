@@ -1,37 +1,46 @@
 {% include "header.html" %}
-<div class="card mb-3">
+<div class="card mb-3 product-page">
   <img src="{{prod.img_url}}" class="card-img-top" alt="...">
   <div class="card-body">
     <h5 class="card-title">{{prod.product_name}}</h5>
-    <p class="card-text">{{prod.product_description}}</p>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">{{prod.price}}</li>
-      <li><form id="kart-form{{prod.id}}" data-id="{{prod.id}}" class="cart-input" action="{{url_for('add_to_cart')}}" method="post">
-        <div class=""></div>
+    <p class="card-text"><strong>Description:</strong> {{prod.product_description}}</p>
+    <p class=""><strong>Price: </strong>  {{prod.price}}</p>
+    <p class=""><strong>Quantity left: </strong> {{prod.quantity}}</p>
+      <div><form id="kart-form{{prod.id}}" data-id="{{prod.id}}" class="cart-input" action="{{url_for('add_to_cart')}}" method="post">
+        <!-- <div class=""></div> -->
         <label for="cart-item">Qty</label>
         <input type="hidden" name="prod_id" id="prod_id{{prod.id}}" value="{{prod.id}}">
-        <input class="" style="width: 20%;" type="number" name="quantity" id="cart-item{{prod.id}}" min="1" required>
-        <input class="btn btn-outline-success" type="submit" value="Add to cart">
+        <input class="" style="width:5%;" type="number" name="quantity" id="cart-item{{prod.id}}" min="1" required>
+        <input class="btn btn-lg btn-outline-success" type="submit" value="Add to cart">
       </form>
-    </li>
-    </ul>
+    </div>
     
   </div>
+</div>
   {%if logged_in %}
   {%for ord in current_user.order%}
   {%if ord in prod_orders %}
+  <div class="reviews">
+    <h4>Leave a review</h4>
   <form action="" method="post" id="review_form" data-id="{{prod.id}}">
+    <div class="review-input">
     <label for="rating">Rate product</label>
-    <input type="number" name="rating" id="rating" max="5" min="1" required>
-    <label for="review">Review product</label>
+    <input style="width: 10%;" type="number" name="rating" id="rating" max="5" min="1" required>
+    </div>
+    <div class="review-input">
+    <label for="review">Review product</label><br>
     <textarea name="review" id="review" cols="30" rows="10" maxlength="150" required>Great Product</textarea>
+    </div>
      <input class="btn btn-outline-success" type="submit" value="Submit">
   </form>
+</div>
   {%break%}
   {%endif%}
   {%endfor%}
   {%endif%}
-  <div>
+
+  <div class="review-display">
+    <h4>Reviews and ratings</h4>
     {%for review in rev%}
     <ul class="commentList">
       <li>
@@ -39,12 +48,9 @@
             <img src="{{ 'zzz.sochi@gmail.com' | gravatar }}">
           </div>
           <div class="commentText">
-            <small>Rating: {{review.rating}}</small>
+            <small>Rating: {{review.rating}}/5</small>
             <p>{{review.review}}</p>
-
-
-            <span class="date sub-text">{{review.customer.first_name}} {{review.customer.last_name}}  </span>
-             
+            <span class="date sub-text">{{review.customer.first_name}} {{review.customer.last_name}}  </span>  
           </div>
       </li>
     </ul>
