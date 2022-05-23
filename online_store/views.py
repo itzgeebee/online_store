@@ -81,7 +81,7 @@ def search():
             product_id = session.get("search")
 
     page = request.args.get("page", 1, type=int)
-    query_result = db.session.query(Product).filter(
+    query_result = Product.query.filter(
         Product.product_name.ilike(f"%{product_id}%") | Product.product_description.ilike(f"%{product_id}%")
         | Product.category.ilike(f"%{product_id}%")).paginate(per_page=40, page=page)
 
@@ -496,8 +496,6 @@ def add_rating(prodId):
     try:
         rating = request.get_json()["rate"]
         review = request.get_json()["rev"]
-        print(rating)
-        print(review)
         new_review = Reviews(
             review=review,
             rating=rating,

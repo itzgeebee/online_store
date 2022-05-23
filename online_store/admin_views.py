@@ -2,7 +2,7 @@ import os
 from flask import render_template, redirect, url_for, request, send_file, session, jsonify
 from sqlalchemy import asc
 
-from online_store.models import Customer, Product, Order, Reviews
+from online_store.models import Customer, Product, Order, Reviews, OrderDetails
 from werkzeug.exceptions import abort
 from online_store import app, login_manager
 from flask_login import current_user
@@ -75,8 +75,17 @@ def sales():
     all_sales = Order.query.order_by(Order.quantity.desc()).paginate(per_page=100, page=page)
 
     sales_list = []
+
+
     for i in all_sales.items:
-        prod = i.to_dict()
+        order_dets = OrderDetails.query.get(i.order_details_id)
+
+        prod = {
+            "customer_id": order_dets.customer_id,
+            "product_id": i.product_id,
+            "quantity": i.quantity,
+            "order_date": order_dets.order_date
+        }
         sales_list.append(prod)
     page_url = 'inventory'
     return render_template("sales.html", prods=sales_list, pages=all_sales,
@@ -176,7 +185,17 @@ def generate_sales():
 
     prod_list = []
     for i in all_prods:
-        prod = i.to_dict()
+        order_dets = OrderDetails.query.get(i.order_details_id)
+
+        prod = {
+            "customer_id": order_dets.customer_id,
+            "product_id": i.product_id,
+            "quantity": i.quantity,
+            "order_date": order_dets.order_date,
+            "to_street": order_dets.to_street,
+            "to_city": order_dets.to_city,
+            "zip": order_dets.zip
+        }
         prod_list.append(prod)
     csv_columns = ["id", "customer_id", "product_id", "quantity", "to_street", "to_city", "zip", "order_date"]
     csv_file = os.path.abspath(os.getcwd()) + "\Sales.csv"
