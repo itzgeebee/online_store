@@ -11,8 +11,6 @@ from flask_mail import Mail
 from flask_migrate import Migrate
 
 
-
-
 file_path = os.path.abspath(os.getcwd()) + "/test.db"
 
 login_manager = LoginManager()

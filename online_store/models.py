@@ -104,4 +104,4 @@ class Reviews(db.Model):
 
 
 # db.drop_all()
-db.create_all()
+# db.create_all()
