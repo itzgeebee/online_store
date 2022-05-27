@@ -1,20 +1,25 @@
 import sys
-
-from flask import render_template, redirect, url_for, flash, request, jsonify, session
-from online_store.models import Customer, Product, Order, OrderDetails, Reviews
+from flask import (render_template,
+                   redirect, url_for,
+                   flash, request,
+                   jsonify, session)
+from online_store.models import (Customer, Product,
+                                 Order, OrderDetails,
+                                 Reviews)
 from werkzeug.exceptions import abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from online_store import app, mail_sender, login_manager
-from flask_login import login_user, login_required, current_user, logout_user
+from flask_login import (login_user, login_required,
+                         current_user, logout_user)
 from flask_mail import Message
 from sqlalchemy.exc import IntegrityError
 from online_store import db
 from threading import Thread
 from datetime import date
 import stripe
-from online_store.forms import ChangePassword, CreateUserForm, LoginUserForm, \
-    ResetPassword, EditUserForm
-
+from online_store.forms import (ChangePassword, CreateUserForm,
+                                LoginUserForm, ResetPassword,
+                                EditUserForm)
 
 stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
@@ -43,15 +48,27 @@ def load_user(id):
 def home():
     message = request.args.get("message")
     page = request.args.get("page", 1, type=int)
-    all_prods = Product.query.paginate(per_page=64, page=page)
+    all_prods = Product.query.with_entities(Product.id,
+                                            Product.img_url,
+                                            Product.price,
+                                            Product.product_description,
+                                            ).paginate(per_page=64,
+                                                       page=page)
 
     prod_list = []
     for i in all_prods.items:
-        prod = i.to_dict()
+        prod = {
+            "id": i.id,
+            "img_url": i.img_url,
+            "product_description": i.product_description,
+            "price": i.price
+        }
         prod_list.append(prod)
     page_url = 'home'
-    return render_template("index.html", prods=prod_list, pages=all_prods,
-                           logged_in=current_user.is_authenticated, page_url=page_url, message=message
+    return render_template("index.html", prods=prod_list,
+                           pages=all_prods,
+                           logged_in=current_user.is_authenticated,
+                           page_url=page_url, message=message
                            )
 
 
@@ -60,9 +77,6 @@ def product():
     product_id = request.args.get("id")
     specific_product = Product.query.get(product_id)
     all_reviews = Reviews.query.filter_by(product_id=product_id)
-    if current_user.is_authenticated:
-        print("yes")
-
     if specific_product:
         prod_orders = [i.order_name for i in specific_product.order]
 
@@ -81,14 +95,23 @@ def search():
             product_id = session.get("search")
 
     page = request.args.get("page", 1, type=int)
-    query_result = Product.query.filter(
+    query_result = Product.query.with_entities(Product.id,
+                                               Product.img_url,
+                                               Product.price,
+                                               Product.product_description
+                                               ).filter(
         Product.product_name.ilike(f"%{product_id}%") | Product.product_description.ilike(f"%{product_id}%")
         | Product.category.ilike(f"%{product_id}%")).paginate(per_page=40, page=page)
 
     if query_result:
         result_list = []
         for i in query_result.items:
-            rez = i.to_dict()
+            rez = {
+                "id": i.id,
+                "img_url": i.img_url,
+                "product_description": i.product_description,
+                "price": i.price
+            }
             result_list.append(rez)
         page_url = "search"
     else:
@@ -116,14 +139,23 @@ def filter():
             category = session["category"]
 
     page = request.args.get("page", 1, type=int)
-    filter_result = Product.query.filter(
+    filter_result = Product.query.with_entities(Product.id,
+                                                Product.img_url,
+                                                Product.price,
+                                                Product.product_description
+                                                ).filter(
         Product.price > min_price,
         Product.price < max_price,
         Product.category == category).paginate(per_page=56, page=page)
     if filter_result:
         result_list = []
         for i in filter_result.items:
-            rez = i.to_dict()
+            rez = {
+                "id": i.id,
+                "img_url": i.img_url,
+                "product_description": i.product_description,
+                "price": i.price
+            }
             result_list.append(rez)
         page_url = 'filter'
         return render_template("index.html", prods=result_list, pages=filter_result,
@@ -166,12 +198,15 @@ def register():
                 db.session.commit()
             except IntegrityError:
                 error = "email already exists"
+                db.session.rollback()
                 return redirect(url_for('login', error=error))
             else:
                 login_user(new_user, remember=True)
                 if prev_page:
                     return redirect(url_for('cart'))
                 return redirect(url_for('home'))
+            finally:
+                db.session.close()
         else:
             error = "confirm password doesn't match password"
             return redirect(url_for("register", error=error))
@@ -240,10 +275,13 @@ def password_reset():
                                         message="Password changed"))
             else:
                 error = "Invalid old password"
+                db.session.rollback()
                 return redirect(url_for("password_reset", error=error))
+            db.session.close()
         else:
             error = "confirm password does not match new password"
             return redirect(url_for("password_reset", error=error))
+
     return render_template('edit.html', form=np_form,
                            logged_in=current_user.is_authenticated,
                            error=error)
@@ -279,9 +317,18 @@ def verify_reset(token):
 def account():
     user_id = request.args.get("user_id")
     customer = Customer.query.get(user_id)
+    order_table = db.session.query(OrderDetails,
+                                   Order, Product).select_from(
+        OrderDetails).join(Order).join(Product).with_entities(OrderDetails.order_date,
+                                                              Product.price,
+                                                              Product.product_description,
+                                                              Order.quantity).filter(
+        OrderDetails.customer_id == user_id
+    ).all()
 
     return render_template("accounts.html", user=customer,
-                           logged_in=current_user.is_authenticated)
+                           logged_in=current_user.is_authenticated,
+                           user_order=order_table)
 
 
 @app.route('/edit-profile', methods=["GET", "POST"])
@@ -307,6 +354,7 @@ def edit_profile():
         user.zip = eu_form.zip.data
         user.phone = eu_form.phone.data
         db.session.commit()
+        db.session.close()
         return redirect(url_for("account", user_id=user_id,
                                 message="Profile update successful"))
     return render_template("edit.html", form=eu_form,
@@ -399,6 +447,7 @@ def success():
         db.session.add(order)
 
     db.session.commit()
+    db.session.close()
 
     mesg = "Transaction Successful. Thanks for patronizing"
 
@@ -488,6 +537,7 @@ def remove_from_cart(prodId):
         "success": True
     })
 
+
 @app.route("/add-rating/<prodId>", methods=["POST"])
 @login_required
 def add_rating(prodId):
@@ -516,5 +566,3 @@ def add_rating(prodId):
         abort(400)
     else:
         return jsonify({"success": True})
-
-

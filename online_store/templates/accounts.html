@@ -30,15 +30,13 @@
                   <th>Quantity</th>
                   <th>Date</th>
               </tr>
-            {%for orders in user.order:%}
-            {%for order in orders.order%}
+            {%for order in user_order%}
                 <tr>
-                    <td>{{order.product_name.product_description}}</td>
-                    <td>{{order.product_name.price}}</td>
+                    <td>{{order.product_description}}</td>
+                    <td>{{order.price}}</td>
                     <td>{{order.quantity}}</td>
-                    <td>{{orders.order_date.strftime('%d %b, %Y')}}</td>
+                    <td>{{order.order_date.strftime('%d %b, %Y')}}</td>
                 </tr>
-            {%endfor%}
             {%endfor%}
           </table>
         </div>
