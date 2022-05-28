@@ -1,8 +1,11 @@
 import os
+import logging
+from dotenv import load_dotenv
 
 
+load_dotenv()
 file_path = os.path.abspath(os.getcwd()) + "/test.db"
-
+logging.basicConfig(filename= "error.log", level=logging.DEBUG, format=f"%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
 SECRET_KEY = os.urandom(10)
 SQLALCHEMY_DATABASE_URI = f"sqlite:///{file_path}"
 SQLALCHEMY_TRACK_MODIFICATIONS = False

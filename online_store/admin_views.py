@@ -1,8 +1,11 @@
 import os
-from flask import render_template, redirect, url_for, request, send_file, session, jsonify
+from flask import (render_template, redirect,
+                   url_for, request,
+                   send_file, session, jsonify)
 from sqlalchemy import asc
 
-from online_store.models import Customer, Product, Order, Reviews, OrderDetails
+from online_store.models import (Customer, Product, Order,
+                                 Reviews, OrderDetails)
 from werkzeug.exceptions import abort
 from online_store import app, login_manager
 from flask_login import current_user
