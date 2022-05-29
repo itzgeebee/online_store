@@ -25,8 +25,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    print("hello")
-
     return app
 # app = Flask(__name__)
 # app.config.from_object('config')
