@@ -47,10 +47,8 @@ def inventory():
     page = request.args.get("page", 1, type=int)
     all_prods = Product.query.order_by(Product.quantity.asc()).paginate(per_page=100, page=page)
 
-    prod_list = []
-    for i in all_prods.items:
-        prod = i.to_dict()
-        prod_list.append(prod)
+    prod_list = [product.to_dict() for product in all_prods.items]
+
     page_url = 'inventory'
     return render_template("inventory.html", prods=prod_list, pages=all_prods,
                            logged_in=current_user.is_authenticated, page_url=page_url)
@@ -77,12 +75,12 @@ def sales():
     page = request.args.get("page", 1, type=int)
     all_sales = Order.query.order_by(Order.quantity.desc()).paginate(per_page=100, page=page)
 
+
     sales_list = []
 
 
     for i in all_sales.items:
         order_dets = OrderDetails.query.get(i.order_details_id)
-
         prod = {
             "customer_id": order_dets.customer_id,
             "product_id": i.product_id,
@@ -221,10 +219,7 @@ def reviews():
     page = request.args.get("page", 1, type=int)
     revs = Reviews.query.order_by(asc(Reviews.rating)).paginate(per_page=150, page=page)
     page_url = "reviews"
-    rev_list = []
-    for i in revs.items:
-        rev = i.to_dict()
-        rev_list.append(rev)
+    rev_list = [rev.to_dict() for rev in revs.items]
 
     return render_template("reviews.html", reviews=rev_list,
                            logged_in=current_user.is_authenticated,

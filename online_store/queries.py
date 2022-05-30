@@ -16,6 +16,7 @@ def load_user(id):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+
     message = request.args.get("message")
     page = request.args.get("page", 1, type=int)
     all_prods = Product.query.with_entities(Product.id,
@@ -34,6 +35,7 @@ def home():
             "price": i.price
         }
         prod_list.append(prod)
+
     page_url = 'home'
     app.logger.info('Info level log')
     app.logger.warning('Warning level log')
