@@ -29,7 +29,6 @@ def add_to_cart():
             qty_list.append(quantity)
             session["product_ids"] = id_list
             session["quantities"] = qty_list
-            print(session["product_ids"], session["quantities"])
         except:
             error = True
             print(sys.exc_info())

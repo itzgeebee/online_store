@@ -225,10 +225,27 @@ def reviews():
                            logged_in=current_user.is_authenticated,
                            pages=revs, page_url=page_url)
 
+
 @app.route("/delete-review")
+@admin_only
 def delete_review():
     rev_id = request.args.get("id")
     rev_to_delete = Reviews.query.get(rev_id)
     db.session.delete(rev_to_delete)
     db.session.commit()
     return redirect(url_for("reviews"))
+
+
+@app.route("/admin/search-customer")
+def search_user():
+    user = request.args.get("user")
+    result = Customer.query.filter(
+        Customer.first_name.ilike(f"%{user}%") |
+        Customer.last_name.ilike(f"%{user}%") |
+        Customer.id.ilike(f"%{user}%") |
+        Customer.mail.ilike(f"%{user}%") |
+        Customer.phone.ilike(f"%{user}%")).all()
+    rez_list = [i.to_dict() for i in result]
+
+    return jsonify({"results":rez_list,
+                    "result_number": len(rez_list)}).json
