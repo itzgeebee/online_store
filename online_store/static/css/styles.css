@@ -1,4 +1,4 @@
-body{
+/* body{
     background-color: #E2D784;
     
 }
@@ -12,44 +12,44 @@ body{
     background-color: white;
     height: 50%;
     margin-top: 1%;
-}
+} */
 
-.msgs{
+/* .msgs{
     text-align: center;
-}
+} */
 
-.intro-div{
+/* .intro-div{
     padding: 2%;
     width: 60%;
     height: 50%;
-}
+} */
 
 
-.car-image {
+/* .car-image {
     max-width:100%;
-}
+} */
 
-.laptop-display{
+/* .laptop-display{
     padding:2%;
     margin-left: 10%;
     display: grid;
 
-}
+} */
 
-.grid-item{
+/* .grid-item{
     display: inline-grid;
-}
+} */
 
-.filter-div{
+/* .filter-div{
     border: 1px solid black;
-    border-radius:5px ;
+    border-radius:5px ; */
     /* line-height: 200%; */
-    padding: 7%;
+    /* padding: 7%;
     height: 8%;
     width: 100%;
-    background-color: white;
+    background-color: white; */
     /* margin: 3%; */
-    grid-column-start: 1;
+    /* grid-column-start: 1;
     grid-column-end: 2;
     margin-right:20%;
     padding-right:10%;
@@ -71,46 +71,46 @@ body{
 .disp{
     grid-column-start: 2;
     grid-column-end: 4;
-    margin-left: 5%;
+    margin-left: 5%; */
     
-}
+/* }
 
 .display-items:hover{
     transform: scale(1.1);
-}
-
+} */
+/* 
 
 .pages {
-    padding: 5% 8%;
-}
+    padding: 5% 8%; */
+/* }
 
 .product-container{
     padding: 0;
     border: 0;
-}
+} */
 
-@media only screen and (max-width: 600px) {
+/* @media only screen and (max-width: 600px) {
     body {
         font-size: 3rem;
       
     }
-  }
+  } */
 
 
-.product-page, .reviews, .review-display{
+/* .product-page, .reviews, .review-display{
     padding-top:2%;
     padding-bottom: 2%;
     padding-left: 10%;
     padding-right: 10%;
     text-align: left;
-}
+} */
 
-.reviews{
+/* .reviews{ */
     /* border: 1px solid black; */
-    width: 50%;
-}
+    /* width: 50%;
+} */
 
-.review-input{
+/* .review-input{
     padding-top: 3%;
     padding-bottom: 3%;
 }
@@ -165,4 +165,210 @@ table{
 .checkout-tab {
     padding: 3%;
     
+} */
+:root{
+    --secondary: #FFFFFF;
+    --primary: #92B4EC;
 }
+body, p, a, ul, li, footer{
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+}
+li{
+    list-style-type: none;
+}
+
+body{
+    background: var(--secondary);
+    overflow-x: hidden; 
+    /* font-size: 18px; */
+}
+
+.buttons{
+    background: none;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 6px 12px;
+    text-transform: uppercase;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.6);
+    display: inline-block;
+    border-radius: 20px;
+}
+
+.buttons:hover{
+    color: #222;
+    background: var(--primary);
+    cursor: pointer;
+}
+
+input, textarea, select{
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px solid #CA82FF;
+}
+
+h1, h2, h3, h4, p, a, li{
+    color: #000;
+    font-weight: normal;
+}
+
+h1,h3{
+    font-size: 1.2em;
+}
+h2{
+    font-size: 1.6em;
+}
+h4{
+    font-size: 1.1em;
+}
+p{
+    font-size: 1em;
+}
+.grid{
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 20px;
+}
+
+#navigation li{
+    margin-left: 20px;
+}
+#navigation a{
+    font-size: 1.6em;
+}
+#navigation a:hover{
+    color: var(--primary);
+}
+#navigation form{
+    width: 80%;
+    max-width: 500px;
+    margin: 20px;
+}
+
+#introduction{
+    padding: 10px 20px 20px 20px;
+    display: block;
+}
+#introduction h5{
+    font-size: 2.6em; 
+}
+#introduction p{
+    font-size: 2.0em;
+    color: var(--primary);
+}
+
+#phones h2{
+    text-align: center;
+}
+
+#phones h2:hover{
+    color: var(--primary);
+}
+.phone-img{
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
+
+}
+.phone-img img{
+    border-radius: 20px;
+    width: 100%;
+    height: 300px;
+}
+
+#phones ul{
+    padding: 30px 20px;
+    background: rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+#phones li{
+    padding: 10px;
+    grid-column: span 4;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
+}
+#phones .item-display img{
+    height: 250px;
+    width: 100%;
+    margin: 10px auto;
+    border-radius: 30px;
+}
+#phones li:hover{
+    transform: scale(1.05);
+}
+
+footer{
+    text-align: center;
+}
+.contact ul{
+    padding: 30px 20px;
+}
+.contact li{
+    padding: 10px;
+    grid-column: span 4;
+    text-align: center;
+    /* border-radius: 20px; */
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
+}
+
+.contact p{
+    font-size: 0.8em;
+}
+
+
+@media screen and (min-width: 620px){
+    
+    #phones ul{
+        padding: 30px 100px;
+    }
+    .phone-img{
+        padding: 30px 100px;
+    }
+}
+
+@media screen and (min-width: 960px){
+    body{
+        font-size: 18px;
+    }
+    
+    .grid{
+        width: 100%;
+        max-width: 1060px;
+        margin: 0 auto;
+    }
+    #introduction{
+        padding-bottom: 40px;
+    }
+    #phones{
+        padding: 30px 20px;
+    }
+    
+    .phone-img, #phones ul{
+        margin: 40px auto;
+    }
+    #phones li{
+        grid-column: span 4;
+    }
+    footer{
+        padding: 40px 20px;
+    }
+}
+
+@media screen and (min-width: 1200px){
+    body{
+        font-size: 20px;
+    }
+    #phones{
+        padding: 90px 0;
+    }
+    footer{
+        padding: 80px 0;
+    }
+    
+}
+
