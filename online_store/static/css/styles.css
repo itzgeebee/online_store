@@ -232,12 +232,16 @@ p{
     grid-template-columns: repeat(8, 1fr);
     gap: 20px;
 }
-
+#navigation{
+    padding-top: 10px;
+    position: sticky;
+    top: 10px;
+}
 #navigation li{
     margin-left: 20px;
 }
 #navigation a{
-    font-size: 1.6em;
+    font-size: 1.1em;
 }
 #navigation a:hover{
     color: var(--primary);
@@ -253,18 +257,21 @@ p{
     display: block;
 }
 #introduction h5{
-    font-size: 2.6em; 
+    font-size: 2.1em; 
 }
 #introduction p{
     font-size: 2.0em;
     color: var(--primary);
 }
 
-#phones h2{
+#phones h2, #laptops h2,
+#mp h2, #hr h2{
     text-align: center;
 }
 
-#phones h2:hover{
+#phones h2:hover, 
+#laptops h2:hover,
+#mp h2:hover, #hr h2:hover{
     color: var(--primary);
 }
 .phone-img{
@@ -279,26 +286,32 @@ p{
     height: 300px;
 }
 
-#phones ul{
+#phones ul, #laptops ul,
+#mp ul, #hr ul{
     padding: 30px 20px;
     background: rgba(0,0,0,0.05);
     margin-bottom: 20px;
 }
 
-#phones li{
+#phones li, #laptops li,
+#mp li, #hr li{
     padding: 10px;
     grid-column: span 4;
     text-align: center;
     border-radius: 20px;
     box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
 }
-#phones .item-display img{
+#phones .item-display img, 
+#laptops .item-display img,
+#mp .item-display img, 
+#hr .item-display img{
     height: 250px;
     width: 100%;
     margin: 10px auto;
     border-radius: 30px;
 }
-#phones li:hover{
+#phones li:hover, #laptops li:hover,
+#mp li:hover, #hr li:hover{
     transform: scale(1.05);
 }
 
@@ -319,15 +332,62 @@ footer{
 .contact p{
     font-size: 0.8em;
 }
+#filters{
+    padding: 30px 100px;
+    /* border: 2px solid var(--primary); */
+    margin: 20px auto;
+    background: url("https://cdn.pixabay.com/photo/2014/04/05/09/30/tablet-314153_960_720.png");
 
+    
+}
+#filters h5{
+    /* text-align: center; */
+    margin-bottom: 0;
+}
+#filters form{
+    width: 50%;
+    max-width: 400px;
+    margin: 25px;
+    /* text-align: center; */
+}
+#filters input, #filters label{
+    /* width: 100%; */
+    margin: 10px 0;
+}
 
+#results{
+    margin: 20px auto;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
+}
+#results .definitions{
+    padding: 30px 0;
+    margin: 15px auto;
+    position: sticky;
+    top: 10px;
+    border: 2px solid var(--primary);
+    border-radius: 20px;
+    background: var(--secondary);
+}
+#results .display-items{
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
+    /* margin: 1px; */
+}
+
+#results .display-items:hover{
+    transform: scale(1.1);
+}
+
+.pages{
+    padding: 30px 60px;
+}
 @media screen and (min-width: 620px){
     
-    #phones ul{
-        padding: 30px 100px;
+    #phones ul, #laptops ul,
+    #mp ul, #hr ul{
+        padding: 30px 50px;
     }
     .phone-img{
-        padding: 30px 100px;
+        padding: 30px 50px;
     }
 }
 
@@ -348,11 +408,14 @@ footer{
         padding: 30px 20px;
     }
     
-    .phone-img, #phones ul{
+    .phone-img, #phones ul,
+    #laptops ul,
+    #mp ul, #hr ul{
         margin: 40px auto;
     }
-    #phones li{
-        grid-column: span 4;
+    #phones li, #laptops li,
+    #mp li, #hr li{
+        grid-column: span 2;
     }
     footer{
         padding: 40px 20px;
@@ -371,4 +434,6 @@ footer{
     }
     
 }
+
+
 
