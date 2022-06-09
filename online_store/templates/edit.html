@@ -1,13 +1,13 @@
 {% include "header.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-<div class="container">
+<section class="only-forms">
   {%if error != None%}
   <div class="errors">{{error}}</div>
   {%endif%}
-  <div class="row">
-    <div class="col">
-        {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+
+  <div class="form-div">
+        {{ wtf.quick_form(form, extra_classes="flask-form", novalidate=True, button_map={"submit": "primary"}) }}
     </div>
   </div>
-</div>
+</section>
 {% include "footer.html" %}

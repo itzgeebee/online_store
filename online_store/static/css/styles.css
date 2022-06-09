@@ -151,7 +151,7 @@ body{
     /* font-size: 18px; */
 }
 
-.buttons{
+.buttons, .flask-form input[type="submit"]{
     background: none;
     border: 2px solid var(--primary);
     color: var(--primary);
@@ -162,13 +162,14 @@ body{
     border-radius: 20px;
 }
 
-.buttons:hover{
+.buttons:hover,
+.flask-form input[type="submit"]:hover{
     color: #222;
     background: var(--primary);
     cursor: pointer;
 }
 
-input, textarea, select{
+input, textarea, select, .flask-form input{
     background: rgba(255, 255, 255, 0.05);
     padding: 10px;
     border-radius: 20px;
@@ -373,7 +374,7 @@ footer{
 
 }
 
-#new-rev form{
+#new-rev form, .flask-form{
     /* grid-column: span 4; */
     width: 80%;
     max-width: 500px;
@@ -381,7 +382,7 @@ footer{
     text-align: center;
 }
 
-#new-rev input, #new-rev textarea{
+#new-rev input, #new-rev textarea, .flask-form input{
     margin: 10px 0;
 }
 
@@ -433,9 +434,7 @@ footer{
     text-align: center;
 }
 
-
-
-#checkout-tab li{
+#checkout-tab li, #admin div{
     padding: 10px;
     grid-column: span 8;
     text-align: center;
@@ -443,11 +442,64 @@ footer{
     box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
 }
 
-#checkout-tab .purchase{
+#checkout-tab .purchase, .only-forms a,
+#user h3, #user .user-details {
     text-align: center;
     margin: 20px 0;
     
 }
+
+.only-forms, #user{
+    padding: 30px 20px;
+}
+
+.form-div, .flask-form{
+    padding: 10px;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
+}
+
+#user .user-list{
+    padding: 30px 20px;
+    border-radius: 20px;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
+}
+#user .user-list li{
+    padding: 10px;
+    grid-column: span 8;
+    text-align: center;
+
+}
+#user a{
+    margin: 20px 0;
+}
+
+.purchases{
+    padding: 30px 20px;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.7);
+    overflow-x: auto;
+}
+.purchases table, .purchases th,
+.purchases td{
+    text-align: center;
+    border: 2px solid var(--primary)
+}
+.purchases table{
+    border-radius: 20px;
+    margin-bottom: 20px;
+}
+
+#admin{
+    padding: 30px 20px;
+}
+
+/* {
+    grid-column: span 4;
+} */
+
+
+
 
 
 
@@ -509,10 +561,12 @@ footer{
     .checkout-items{
         margin: 40px auto;
     }
-    #checkout-tab li{
+    #checkout-tab li, #user .user-list li{
         grid-column: span 4;
         
     }
+
+    
 }
 
 @media screen and (min-width: 1200px){

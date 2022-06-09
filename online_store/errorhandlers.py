@@ -4,6 +4,7 @@ from online_store import app
 
 @app.errorhandler(404)
 def not_found_error(error):
+
     return render_template("4.html", error=error), 404
 
 

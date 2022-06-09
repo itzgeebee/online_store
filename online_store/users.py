@@ -119,9 +119,14 @@ def forgot_password():
         if not user:
             return redirect(url_for('forgot_password', error="email not found"))
         else:
-            send_email(user)
-            mesg = "Check your email for link to change password"
-            return render_template("feedback.html", txt=mesg)
+            try:
+                send_email(user)
+            except Exception as e:
+                print(e)
+                abort(500)
+            else:
+                mesg = "Check your email for link to change password"
+                return render_template("feedback.html", txt=mesg)
 
     return render_template("forgot-password.html")
 
@@ -146,16 +151,13 @@ def password_reset():
                 return redirect(url_for('account', user_id=user_id,
                                         message="Password changed"))
             else:
-                app.logger.error('Error level log')
-                app.logger.critical('Critical level log')
+
                 error = "Invalid old password"
                 db.session.rollback()
                 return redirect(url_for("password_reset", error=error))
 
         else:
 
-            app.logger.error('Error level log')
-            app.logger.critical('Critical level log')
             error = "confirm password does not match new password"
             return redirect(url_for("password_reset", error=error))
 

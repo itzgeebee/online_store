@@ -1,27 +1,29 @@
 {% include "header.html" %}
 
 
-<div class="container">
-    <div class="row">
+<section id="user">
+    
     <h3>Your Information</h3>
-    <a href="{{url_for('edit_profile', user_id=user.id)}}" aria-current="true">
-        Edit profile
-    </a>
-      <div class="col">
-        <ul class="list-group">
+    
+      <div class="user-details ">
+        <ul class="user-list grid">
             <li class="list-group-item">Full name: {{user.first_name}} {{user.last_name}}</li>
             <li class="list-group-item">Street: {{user.street}}</li>
             <li class="list-group-item">city: {{user.city}}</li>
             <li class="list-group-item">zip: {{user.zip}}</li>
             <li class="list-group-item">email {{user.mail}}  </li>
             <li class="list-group-item">phone {{user.phone}}</li>
-            <a href="{{url_for('password_reset', user_id=user.id)}}" aria-current="true">
-                Change password
-            </a>
+            
           </ul>
+          <a href="{{url_for('edit_profile', user_id=user.id)}}" class="buttons" aria-current="true">
+            Edit profile
+          </a>
+          <a href="{{url_for('password_reset', user_id=user.id)}}" class="buttons" aria-current="true">
+              Change password
+          </a>
         </div>
 
-        <div class="row">
+        <div class="purchases">
             <h3>All Purchases</h3>
             <table>
               <tr>
@@ -39,14 +41,10 @@
                 </tr>
             {%endfor%}
           </table>
+          <h2>Total spent: </h2>
         </div>
-        </ul>
         
-      
-      
-  </div>
-</div>
-    <div class="container">
         
-    </div>
+</section>
+   
   {% include "footer.html" %}
