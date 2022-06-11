@@ -7,7 +7,7 @@
     <h3><strong>Description:</strong> {{prod.product_description}}</h3>
     <h3 class=""><strong>Price: </strong>  {{prod.price}}</h3>
     <h3 class=""><strong>Quantity left: </strong> {{prod.quantity}}</h3>
-    <h3 class=""><strong>Rating: </strong> 5/5</h3>
+    <h3 class=""><strong>Rating: </strong> {{rating}}</h3>
 
       <div><form id="kart-form{{prod.id}}" data-id="{{prod.id}}" class="cart-input" action="{{url_for('add_to_cart')}}" method="post">
 

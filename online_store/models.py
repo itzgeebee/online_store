@@ -19,6 +19,9 @@ class Product(db.Model):
     order = db.relationship("Order", back_populates="product_name")
     reviews = db.relationship("Reviews", backref="product")
 
+    def __repr__(self):
+        return f"<name:{self.product_name}>"
+
 
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
@@ -37,6 +40,9 @@ class Customer(UserMixin, db.Model):
     password = db.Column(db.String(500), nullable=False)
     order = db.relationship("OrderDetails", back_populates="customer_name")
     reviews = db.relationship("Reviews", backref="customer")
+
+    def __repr__(self):
+        return f"<mail:{self.mail}>"
 
     def get_token(self, expires_sec=300):
         return jwt.encode({'reset_password': self.mail,
@@ -68,6 +74,8 @@ class Order(db.Model):
     order_details_id = db.Column(db.Integer, db.ForeignKey("order_details.id"))
     order_name = db.relationship("OrderDetails", back_populates="order")
 
+    def __repr__(self):
+        return f"<name:{self.product_id}>"
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
@@ -99,6 +107,8 @@ class Reviews(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     date = db.Column(db.DateTime, nullable=True)
 
+    def __repr__(self):
+        return f"<name:{self.customer}>, <product{self.product}>"
     def to_dict(self):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
