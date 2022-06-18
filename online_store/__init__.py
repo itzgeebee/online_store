@@ -39,6 +39,7 @@ mail_sender = Mail(app)
 Bootstrap(app)
 Session(app)
 csrf = CSRFProtect(app)
+
 gravatar = Gravatar(app,
                     size=50,
                     rating='g',
