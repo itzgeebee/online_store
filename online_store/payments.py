@@ -24,12 +24,12 @@ def send_mail(app, msg):
 @app.route('/create-checkout-session', methods=['POST'])
 @login_required
 def create_checkout_session():
-    l1 = session["product_ids"]
-    l2 = session["quantities"]
+    prod_id = session["product_ids"]
+    prod_qty = session["quantities"]
     items_to_buy = []
-    for i in range(len(l1)):
-        product_to_buy = Product.query.get(l1[i])
-        qty = int(l2[i])
+    for i in range(len(prod_id)):
+        product_to_buy = Product.query.get(prod_id[i])
+        qty = int(prod_qty[i])
         qty_left = product_to_buy.quantity
         if qty > qty_left:
             error = f"Sorry we only have {qty_left} quantity left"
@@ -41,7 +41,7 @@ def create_checkout_session():
                     'product_data': {
                         'name': product_to_buy.product_description,
                     },
-                    'unit_amount': product_to_buy.price,
+                    'unit_amount': product_to_buy.price / 550,
                 },
                 'quantity': qty,
             }
