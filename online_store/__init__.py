@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-from flask_wtf.csrf import CSRFProtect
+# from flask_wtf.csrf import CSRFProtect
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -38,7 +38,7 @@ migrate = Migrate(app, db)
 mail_sender = Mail(app)
 Bootstrap(app)
 Session(app)
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 
 gravatar = Gravatar(app,
                     size=50,
