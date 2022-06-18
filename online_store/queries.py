@@ -139,7 +139,7 @@ def rated():
         session.pop("max")
     page = request.args.get("page", 1, type=int)
     query_result = db.session.query(Product).select_from(
-        Product).join(Reviews).group_by(Reviews.product_id).order_by(desc(func.avg(Reviews.rating))
+        Product).join(Reviews).group_by(Product.id).order_by(desc(func.avg(Reviews.rating))
                                                                      ).paginate(
         per_page=40, page=page
     )
@@ -168,7 +168,7 @@ def purchased():
         session.pop("max")
     page = request.args.get("page", 1, type=int)
     query_result = db.session.query(Product).select_from(
-        Product).join(Order).group_by(Order.product_id).order_by(desc(func.sum(Order.quantity))
+        Product).join(Order).group_by(Product.id).order_by(desc(func.sum(Order.quantity))
                                                                  ).paginate(
         per_page=40, page=page
     )
