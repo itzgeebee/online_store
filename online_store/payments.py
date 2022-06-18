@@ -41,7 +41,7 @@ def create_checkout_session():
                     'product_data': {
                         'name': product_to_buy.product_description,
                     },
-                    'unit_amount': product_to_buy.price / 550,
+                    'unit_amount': product_to_buy.price // 550,
                 },
                 'quantity': qty,
             }
