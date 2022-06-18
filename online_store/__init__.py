@@ -5,10 +5,10 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-# from forms import CreatePostForm, CreateUserForm, LoginUserForm, CommentForm
 from flask_gravatar import Gravatar
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_session import Session
 
 def create_app(test_config=None):
     # create and configure the app
@@ -26,8 +26,7 @@ def create_app(test_config=None):
         pass
 
     return app
-# app = Flask(__name__)
-# app.config.from_object('config')
+
 
 
 app = create_app()
@@ -38,6 +37,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 mail_sender = Mail(app)
 Bootstrap(app)
+Session(app)
 gravatar = Gravatar(app,
                     size=50,
                     rating='g',

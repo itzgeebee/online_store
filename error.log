@@ -6121,3 +6121,60 @@
 2022-06-18 13:20:44,045 INFO werkzeug Thread-25 : 127.0.0.1 - - [18/Jun/2022 13:20:44] "GET /admin/inventory HTTP/1.1" 200 -
 2022-06-18 13:20:44,099 INFO werkzeug Thread-24 : 127.0.0.1 - - [18/Jun/2022 13:20:44] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
 2022-06-18 13:20:44,156 INFO werkzeug Thread-26 : 127.0.0.1 - - [18/Jun/2022 13:20:44] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:27:18,205 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:27:26,006 INFO werkzeug Thread-4 : 127.0.0.1 - - [18/Jun/2022 13:27:26] "[32mGET /cart HTTP/1.1[0m" 302 -
+2022-06-18 13:27:33,953 INFO online_store Thread-3 : Info level log
+2022-06-18 13:27:33,953 WARNING online_store Thread-3 : Warning level log
+2022-06-18 13:27:33,953 ERROR online_store Thread-3 : Error level log
+2022-06-18 13:27:33,953 CRITICAL online_store Thread-3 : Critical level log
+2022-06-18 13:27:34,178 INFO werkzeug Thread-3 : 127.0.0.1 - - [18/Jun/2022 13:27:34] "GET /?message=No+item+in+cart+yet%2C+start+shopping HTTP/1.1" 200 -
+2022-06-18 13:27:34,662 INFO werkzeug Thread-5 : 127.0.0.1 - - [18/Jun/2022 13:27:34] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:27:34,674 INFO werkzeug Thread-6 : 127.0.0.1 - - [18/Jun/2022 13:27:34] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:28:05,505 INFO werkzeug Thread-8 : 127.0.0.1 - - [18/Jun/2022 13:28:05] "GET /login HTTP/1.1" 200 -
+2022-06-18 13:28:05,542 INFO werkzeug Thread-7 : 127.0.0.1 - - [18/Jun/2022 13:28:05] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:28:05,606 INFO werkzeug Thread-9 : 127.0.0.1 - - [18/Jun/2022 13:28:05] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:28:15,476 INFO werkzeug Thread-10 : 127.0.0.1 - - [18/Jun/2022 13:28:15] "[32mPOST /login HTTP/1.1[0m" 302 -
+2022-06-18 13:28:16,784 INFO online_store Thread-11 : Info level log
+2022-06-18 13:28:16,784 WARNING online_store Thread-11 : Warning level log
+2022-06-18 13:28:16,784 ERROR online_store Thread-11 : Error level log
+2022-06-18 13:28:16,784 CRITICAL online_store Thread-11 : Critical level log
+2022-06-18 13:28:17,220 INFO werkzeug Thread-11 : 127.0.0.1 - - [18/Jun/2022 13:28:17] "GET /?name=Gideon HTTP/1.1" 200 -
+2022-06-18 13:28:17,271 INFO werkzeug Thread-12 : 127.0.0.1 - - [18/Jun/2022 13:28:17] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:28:17,368 INFO werkzeug Thread-13 : 127.0.0.1 - - [18/Jun/2022 13:28:17] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:28:24,820 INFO werkzeug Thread-14 : 127.0.0.1 - - [18/Jun/2022 13:28:24] "GET /admin HTTP/1.1" 200 -
+2022-06-18 13:28:24,851 INFO werkzeug Thread-15 : 127.0.0.1 - - [18/Jun/2022 13:28:24] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:28:24,915 INFO werkzeug Thread-16 : 127.0.0.1 - - [18/Jun/2022 13:28:24] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:28:28,768 INFO werkzeug Thread-18 : 127.0.0.1 - - [18/Jun/2022 13:28:28] "GET /admin/inventory HTTP/1.1" 200 -
+2022-06-18 13:28:28,813 INFO werkzeug Thread-17 : 127.0.0.1 - - [18/Jun/2022 13:28:28] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:28:28,859 INFO werkzeug Thread-19 : 127.0.0.1 - - [18/Jun/2022 13:28:28] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:29:07,133 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\config.py', reloading
+2022-06-18 13:29:07,414 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:29:09,840 INFO werkzeug Thread-2 :  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2022-06-18 13:29:30,356 INFO online_store Thread-3 : Info level log
+2022-06-18 13:29:30,356 WARNING online_store Thread-3 : Warning level log
+2022-06-18 13:29:30,356 ERROR online_store Thread-3 : Error level log
+2022-06-18 13:29:30,356 CRITICAL online_store Thread-3 : Critical level log
+2022-06-18 13:29:30,612 INFO werkzeug Thread-3 : 127.0.0.1 - - [18/Jun/2022 13:29:30] "GET / HTTP/1.1" 200 -
+2022-06-18 13:29:31,355 INFO werkzeug Thread-5 : 127.0.0.1 - - [18/Jun/2022 13:29:31] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:29:31,915 INFO werkzeug Thread-6 : 127.0.0.1 - - [18/Jun/2022 13:29:31] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:29:38,827 INFO werkzeug Thread-8 : 127.0.0.1 - - [18/Jun/2022 13:29:38] "GET /login HTTP/1.1" 200 -
+2022-06-18 13:29:38,881 INFO werkzeug Thread-7 : 127.0.0.1 - - [18/Jun/2022 13:29:38] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:29:38,929 INFO werkzeug Thread-9 : 127.0.0.1 - - [18/Jun/2022 13:29:38] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:29:41,767 INFO werkzeug Thread-11 : 127.0.0.1 - - [18/Jun/2022 13:29:41] "[32mPOST /login HTTP/1.1[0m" 302 -
+2022-06-18 13:29:42,840 INFO online_store Thread-12 : Info level log
+2022-06-18 13:29:42,840 WARNING online_store Thread-12 : Warning level log
+2022-06-18 13:29:42,840 ERROR online_store Thread-12 : Error level log
+2022-06-18 13:29:42,840 CRITICAL online_store Thread-12 : Critical level log
+2022-06-18 13:29:43,260 INFO werkzeug Thread-12 : 127.0.0.1 - - [18/Jun/2022 13:29:43] "GET /?name=Gideon HTTP/1.1" 200 -
+2022-06-18 13:29:43,309 INFO werkzeug Thread-13 : 127.0.0.1 - - [18/Jun/2022 13:29:43] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:29:43,404 INFO werkzeug Thread-14 : 127.0.0.1 - - [18/Jun/2022 13:29:43] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:29:52,420 INFO werkzeug Thread-16 : 127.0.0.1 - - [18/Jun/2022 13:29:52] "GET /admin HTTP/1.1" 200 -
+2022-06-18 13:29:52,511 INFO werkzeug Thread-17 : 127.0.0.1 - - [18/Jun/2022 13:29:52] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:29:52,520 INFO werkzeug Thread-18 : 127.0.0.1 - - [18/Jun/2022 13:29:52] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:32:57,702 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\online_store\\cart.py', reloading
+2022-06-18 13:32:58,034 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:33:02,369 INFO werkzeug Thread-2 :  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2022-06-18 13:34:59,924 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\online_store\\cart.py', reloading
+2022-06-18 13:35:00,336 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:40:40,599 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\online_store\\__init__.py', reloading
+2022-06-18 13:40:40,785 INFO werkzeug MainThread :  * Restarting with stat

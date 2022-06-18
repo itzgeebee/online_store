@@ -2,12 +2,11 @@ import os
 import logging
 from dotenv import load_dotenv
 
-
 load_dotenv()
 file_path = os.path.abspath(os.getcwd()) + "/test.db"
 logging.basicConfig(filename= "error.log", level=logging.DEBUG, format=f"%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
 SECRET_KEY = os.urandom(10)
-SQLALCHEMY_DATABASE_URI = os.environ.get("DB_URL", f"sqlite:///{file_path}")
+SQLALCHEMY_DATABASE_URI = os.environ.get("DB_URL")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 465
@@ -17,8 +16,6 @@ MAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 MAIL_DEFAULT_SENDER = os.environ.get("EMAIL")
 STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_PRIVATE")
+SESSION_TYPE = "filesystem"
 DEBUG=True
-# database_path = "postgresql://{}:{}@{}/{}".format(
-#     "postgres", "geebee", "localhost:5433", "haven")
-# SQLALCHEMY_DATABASE_URI = database_path
 

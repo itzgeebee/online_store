@@ -108,7 +108,7 @@ def add_rating(prodId):
     except:
         error = True
         db.session.rollback()
-        print(sys.exc_info())
+
     finally:
         db.session.close()
     if error:
