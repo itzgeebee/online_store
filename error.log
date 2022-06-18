@@ -6015,3 +6015,109 @@
 2022-06-15 17:29:53,964 INFO werkzeug Thread-11 : 127.0.0.1 - - [15/Jun/2022 17:29:53] "GET / HTTP/1.1" 200 -
 2022-06-15 17:29:54,012 INFO werkzeug Thread-12 : 127.0.0.1 - - [15/Jun/2022 17:29:54] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
 2022-06-15 17:29:54,148 INFO werkzeug Thread-13 : 127.0.0.1 - - [15/Jun/2022 17:29:54] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-15 18:05:50,862 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\config.py', reloading
+2022-06-15 18:05:51,485 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-15 18:06:17,270 INFO werkzeug Thread-4 : 127.0.0.1 - - [15/Jun/2022 18:06:17] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2022-06-15 18:06:18,110 INFO werkzeug Thread-5 : 127.0.0.1 - - [15/Jun/2022 18:06:18] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2022-06-15 18:06:18,110 INFO werkzeug Thread-6 : 127.0.0.1 - - [15/Jun/2022 18:06:18] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2022-06-15 18:06:18,190 INFO werkzeug Thread-7 : 127.0.0.1 - - [15/Jun/2022 18:06:18] "GET /?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+2022-06-15 18:06:18,230 INFO werkzeug Thread-8 : 127.0.0.1 - - [15/Jun/2022 18:06:18] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-15 18:06:18,334 INFO werkzeug Thread-9 : 127.0.0.1 - - [15/Jun/2022 18:06:18] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-15 18:08:39,385 ERROR flask_migrate MainThread : Error: Directory migrations already exists and is not empty
+2022-06-18 11:40:26,353 ERROR flask_migrate MainThread : Error: Directory migrations already exists and is not empty
+2022-06-18 11:54:44,808 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 11:54:46,171 INFO werkzeug Thread-2 :  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2022-06-18 11:55:04,087 INFO werkzeug Thread-3 : 127.0.0.1 - - [18/Jun/2022 11:55:04] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2022-06-18 11:55:05,100 INFO werkzeug Thread-4 : 127.0.0.1 - - [18/Jun/2022 11:55:05] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2022-06-18 11:55:05,104 INFO werkzeug Thread-5 : 127.0.0.1 - - [18/Jun/2022 11:55:05] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2022-06-18 11:55:05,261 INFO werkzeug Thread-6 : 127.0.0.1 - - [18/Jun/2022 11:55:05] "GET /?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+2022-06-18 11:55:05,328 INFO werkzeug Thread-7 : 127.0.0.1 - - [18/Jun/2022 11:55:05] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 11:55:05,556 INFO werkzeug Thread-8 : 127.0.0.1 - - [18/Jun/2022 11:55:05] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 11:58:22,732 INFO online_store Thread-10 : Info level log
+2022-06-18 11:58:22,733 WARNING online_store Thread-10 : Warning level log
+2022-06-18 11:58:22,733 ERROR online_store Thread-10 : Error level log
+2022-06-18 11:58:22,733 CRITICAL online_store Thread-10 : Critical level log
+2022-06-18 11:58:25,142 INFO werkzeug Thread-10 : 127.0.0.1 - - [18/Jun/2022 11:58:25] "GET /product?id=1 HTTP/1.1" 200 -
+2022-06-18 11:58:25,206 INFO werkzeug Thread-9 : 127.0.0.1 - - [18/Jun/2022 11:58:25] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 11:58:25,267 INFO werkzeug Thread-11 : 127.0.0.1 - - [18/Jun/2022 11:58:25] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 11:58:42,683 INFO werkzeug Thread-12 : 127.0.0.1 - - [18/Jun/2022 11:58:42] "POST /search HTTP/1.1" 200 -
+2022-06-18 11:58:42,745 INFO werkzeug Thread-13 : 127.0.0.1 - - [18/Jun/2022 11:58:42] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 11:58:42,861 INFO werkzeug Thread-14 : 127.0.0.1 - - [18/Jun/2022 11:58:42] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 11:59:03,280 INFO werkzeug Thread-15 : 127.0.0.1 - - [18/Jun/2022 11:59:03] "POST /search HTTP/1.1" 200 -
+2022-06-18 11:59:03,318 INFO werkzeug Thread-16 : 127.0.0.1 - - [18/Jun/2022 11:59:03] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 11:59:03,388 INFO werkzeug Thread-17 : 127.0.0.1 - - [18/Jun/2022 11:59:03] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 11:59:14,343 INFO werkzeug Thread-18 : 127.0.0.1 - - [18/Jun/2022 11:59:14] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2022-06-18 11:59:14,405 INFO werkzeug Thread-19 : 127.0.0.1 - - [18/Jun/2022 11:59:14] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2022-06-18 11:59:14,431 INFO werkzeug Thread-20 : 127.0.0.1 - - [18/Jun/2022 11:59:14] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2022-06-18 11:59:14,463 INFO werkzeug Thread-21 : 127.0.0.1 - - [18/Jun/2022 11:59:14] "GET /?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+2022-06-18 11:59:14,513 INFO werkzeug Thread-22 : 127.0.0.1 - - [18/Jun/2022 11:59:14] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 12:08:06,216 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\online_store\\queries.py', reloading
+2022-06-18 12:08:06,424 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 12:17:53,014 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\online_store\\models.py', reloading
+2022-06-18 12:17:53,242 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:01:19,833 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:01:21,537 INFO werkzeug Thread-2 :  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2022-06-18 13:01:34,925 INFO werkzeug Thread-4 : 127.0.0.1 - - [18/Jun/2022 13:01:34] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2022-06-18 13:01:35,839 INFO werkzeug Thread-5 : 127.0.0.1 - - [18/Jun/2022 13:01:35] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2022-06-18 13:01:35,840 INFO werkzeug Thread-3 : 127.0.0.1 - - [18/Jun/2022 13:01:35] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2022-06-18 13:01:35,881 INFO werkzeug Thread-6 : 127.0.0.1 - - [18/Jun/2022 13:01:35] "GET /?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+2022-06-18 13:01:35,924 INFO werkzeug Thread-7 : 127.0.0.1 - - [18/Jun/2022 13:01:35] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 13:01:36,090 INFO werkzeug Thread-8 : 127.0.0.1 - - [18/Jun/2022 13:01:36] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 13:02:04,373 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\config.py', reloading
+2022-06-18 13:02:04,753 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:02:06,759 INFO werkzeug Thread-2 :  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2022-06-18 13:02:26,429 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\config.py', reloading
+2022-06-18 13:02:26,565 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:05:42,236 INFO werkzeug Thread-4 : 127.0.0.1 - - [18/Jun/2022 13:05:42] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2022-06-18 13:05:43,062 INFO werkzeug Thread-6 : 127.0.0.1 - - [18/Jun/2022 13:05:43] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2022-06-18 13:05:43,063 INFO werkzeug Thread-5 : 127.0.0.1 - - [18/Jun/2022 13:05:43] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2022-06-18 13:05:43,089 INFO werkzeug Thread-7 : 127.0.0.1 - - [18/Jun/2022 13:05:43] "GET /?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+2022-06-18 13:05:43,116 INFO werkzeug Thread-8 : 127.0.0.1 - - [18/Jun/2022 13:05:43] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 13:05:43,236 INFO werkzeug Thread-9 : 127.0.0.1 - - [18/Jun/2022 13:05:43] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 13:06:22,862 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\online_store\\queries.py', reloading
+2022-06-18 13:06:23,586 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:06:25,196 INFO werkzeug Thread-2 :  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2022-06-18 13:17:29,292 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\online_store\\queries.py', reloading
+2022-06-18 13:17:29,724 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:17:42,961 INFO werkzeug Thread-4 : 127.0.0.1 - - [18/Jun/2022 13:17:42] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2022-06-18 13:17:43,781 INFO werkzeug Thread-6 : 127.0.0.1 - - [18/Jun/2022 13:17:43] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2022-06-18 13:17:43,781 INFO werkzeug Thread-5 : 127.0.0.1 - - [18/Jun/2022 13:17:43] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2022-06-18 13:17:43,806 INFO werkzeug Thread-7 : 127.0.0.1 - - [18/Jun/2022 13:17:43] "GET /?__debugger__=yes&cmd=resource&f=ubuntu.ttf HTTP/1.1" 200 -
+2022-06-18 13:17:43,825 INFO werkzeug Thread-8 : 127.0.0.1 - - [18/Jun/2022 13:17:43] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 13:17:43,944 INFO werkzeug Thread-9 : 127.0.0.1 - - [18/Jun/2022 13:17:43] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-06-18 13:19:10,848 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\gb\\Documents\\pythonProject\\online_store\\online_store\\queries.py', reloading
+2022-06-18 13:19:11,077 INFO werkzeug MainThread :  * Restarting with stat
+2022-06-18 13:19:12,974 INFO werkzeug Thread-2 :  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2022-06-18 13:19:21,084 INFO online_store Thread-4 : Info level log
+2022-06-18 13:19:21,084 WARNING online_store Thread-4 : Warning level log
+2022-06-18 13:19:21,084 ERROR online_store Thread-4 : Error level log
+2022-06-18 13:19:21,084 CRITICAL online_store Thread-4 : Critical level log
+2022-06-18 13:19:21,347 INFO werkzeug Thread-4 : 127.0.0.1 - - [18/Jun/2022 13:19:21] "GET / HTTP/1.1" 200 -
+2022-06-18 13:19:21,878 INFO werkzeug Thread-5 : 127.0.0.1 - - [18/Jun/2022 13:19:21] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:19:21,893 INFO werkzeug Thread-6 : 127.0.0.1 - - [18/Jun/2022 13:19:21] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:19:50,105 INFO werkzeug Thread-8 : 127.0.0.1 - - [18/Jun/2022 13:19:50] "GET /login HTTP/1.1" 200 -
+2022-06-18 13:19:50,144 INFO werkzeug Thread-7 : 127.0.0.1 - - [18/Jun/2022 13:19:50] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:19:50,225 INFO werkzeug Thread-9 : 127.0.0.1 - - [18/Jun/2022 13:19:50] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:19:55,251 ERROR online_store Thread-10 : Error level log
+2022-06-18 13:19:55,251 CRITICAL online_store Thread-10 : Critical level log
+2022-06-18 13:19:55,457 INFO werkzeug Thread-10 : 127.0.0.1 - - [18/Jun/2022 13:19:55] "[32mPOST /login HTTP/1.1[0m" 302 -
+2022-06-18 13:19:55,466 INFO werkzeug Thread-11 : 127.0.0.1 - - [18/Jun/2022 13:19:55] "GET /login?error=Invalid+email%2C+try+signing+up HTTP/1.1" 200 -
+2022-06-18 13:19:55,645 INFO werkzeug Thread-12 : 127.0.0.1 - - [18/Jun/2022 13:19:55] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:19:55,671 INFO werkzeug Thread-13 : 127.0.0.1 - - [18/Jun/2022 13:19:55] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:19:59,556 INFO werkzeug Thread-14 : 127.0.0.1 - - [18/Jun/2022 13:19:59] "GET /register HTTP/1.1" 200 -
+2022-06-18 13:19:59,583 INFO werkzeug Thread-15 : 127.0.0.1 - - [18/Jun/2022 13:19:59] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:19:59,642 INFO werkzeug Thread-16 : 127.0.0.1 - - [18/Jun/2022 13:19:59] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:20:29,284 INFO werkzeug Thread-18 : 127.0.0.1 - - [18/Jun/2022 13:20:29] "[32mPOST /register HTTP/1.1[0m" 302 -
+2022-06-18 13:20:30,420 INFO online_store Thread-17 : Info level log
+2022-06-18 13:20:30,420 WARNING online_store Thread-17 : Warning level log
+2022-06-18 13:20:30,420 ERROR online_store Thread-17 : Error level log
+2022-06-18 13:20:30,421 CRITICAL online_store Thread-17 : Critical level log
+2022-06-18 13:20:30,852 INFO werkzeug Thread-17 : 127.0.0.1 - - [18/Jun/2022 13:20:30] "GET / HTTP/1.1" 200 -
+2022-06-18 13:20:30,925 INFO werkzeug Thread-19 : 127.0.0.1 - - [18/Jun/2022 13:20:30] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:20:30,941 INFO werkzeug Thread-20 : 127.0.0.1 - - [18/Jun/2022 13:20:30] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:20:40,260 INFO werkzeug Thread-22 : 127.0.0.1 - - [18/Jun/2022 13:20:40] "GET /admin HTTP/1.1" 200 -
+2022-06-18 13:20:40,295 INFO werkzeug Thread-21 : 127.0.0.1 - - [18/Jun/2022 13:20:40] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:20:40,364 INFO werkzeug Thread-23 : 127.0.0.1 - - [18/Jun/2022 13:20:40] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -
+2022-06-18 13:20:44,045 INFO werkzeug Thread-25 : 127.0.0.1 - - [18/Jun/2022 13:20:44] "GET /admin/inventory HTTP/1.1" 200 -
+2022-06-18 13:20:44,099 INFO werkzeug Thread-24 : 127.0.0.1 - - [18/Jun/2022 13:20:44] "[36mGET /static/css/styles.css HTTP/1.1[0m" 304 -
+2022-06-18 13:20:44,156 INFO werkzeug Thread-26 : 127.0.0.1 - - [18/Jun/2022 13:20:44] "[36mGET /static/js/scripts.js HTTP/1.1[0m" 304 -

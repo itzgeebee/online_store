@@ -21,10 +21,10 @@ def home():
     phone_cat = Product.query.filter_by(category="Phone").limit(4).all()
     laptop_cat = Product.query.filter_by(category="Laptop").limit(4).all()
     highly_rated = db.session.query(Product).select_from(
-        Product).join(Reviews).group_by(Reviews.product_id).order_by(desc(func.avg(Reviews.rating))
+        Product).join(Reviews).group_by(Product.id).order_by(desc(func.avg(Reviews.rating))
                                                                      ).limit(4).all()
     most_purchased = db.session.query(Product).select_from(
-        Product).join(Order).group_by(Order.product_id).order_by(desc(func.sum(Order.quantity))
+        Product).join(Order).group_by(Product.id).order_by(desc(func.sum(Order.quantity))
                                                                  ).limit(4).all()
 
     products = {"phones": phone_cat,
