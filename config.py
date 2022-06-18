@@ -19,4 +19,4 @@ STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_PRIVATE")
 SESSION_TYPE = "filesystem"
 DEBUG = True
-SERVER_NAME = "https://gadgehaven.herokuapp.com"
+SERVER_NAME = "gadgehaven.herokuapp.com"
