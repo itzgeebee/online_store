@@ -23,7 +23,7 @@ def send_email(user):
     msg.subject = "reset password"
     msg.recipients = [user.mail]
     msg.body = f"follow this link to reset your password " \
-               f"{url_for('verify_reset', token=tok)}"
+               f"https://gadgehaven.herokuapp.com{url_for('verify_reset', token=tok)}"
     mail_sender.send(msg)
 
 
