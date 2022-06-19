@@ -50,3 +50,17 @@ These are the features of the application:
 9. View reviews
 10. Delete reviews
 
+## Starting the project
+
+[Fork](https://help.github.com/en/articles/fork-a-repo) the project repository and [clone](https://help.github.com/en/articles/cloning-a-repository) your forked repository to your machine. 
+
+### Backend
+
+The [backend](./online_store/README.md) directory contains a completed Flask and SQLAlchemy server. Files you should be looking to work on: 
+
+1. `online_store/__init__.py`
+2.`config.py`
+
+> View the [Backend README](./online_store/README.md) for more details.
+
+
