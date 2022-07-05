@@ -17,7 +17,7 @@ def create_app(test_config=None):
         app.config.from_object("config")
     else:
         # load the test config if passed in
-        app.config.from_object(test_config)
+        app.config.from_mapping(test_config)
 
     try:
         os.makedirs(app.instance_path)
