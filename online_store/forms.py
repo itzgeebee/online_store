@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, EmailField, \
     SelectField, IntegerField, URLField, HiddenField
-from wtforms.validators import DataRequired, URL, Length, NumberRange
+from wtforms.validators import DataRequired, URL, Length, NumberRange, Email
 
 
 class CreateUserForm(FlaskForm):
-    email = EmailField("",validators=[DataRequired()],
+    email = EmailField("",validators=[DataRequired(), Email()],
                        render_kw={"placeholder": "Email"})
     password = PasswordField("",validators=[DataRequired(),
                                          Length(min=6, max=30)],
@@ -34,7 +34,7 @@ class CreateUserForm(FlaskForm):
 
 
 class LoginUserForm(FlaskForm):
-    email = EmailField("",validators=[DataRequired()],
+    email = EmailField("",validators=[DataRequired(), Email()],
                        render_kw={"placeholder": "Email"})
     password = PasswordField("",validators=[DataRequired()],
                              render_kw={"placeholder": "Password"})
@@ -55,7 +55,7 @@ class ResetPassword(FlaskForm):
 
 
 class EditUserForm(FlaskForm):
-    email = EmailField("Email", validators=[DataRequired()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
     first_name = StringField("First Name", validators=[DataRequired(), Length(min=2)])
     last_name = StringField("Last Name", validators=[DataRequired(), Length(min=2)])
     street = StringField("Street", validators=[DataRequired(), Length(min=2)])

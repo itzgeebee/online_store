@@ -1,6 +1,5 @@
 import os
 from datetime import timedelta
-# from flask_wtf.csrf import CSRFProtect
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -18,7 +17,7 @@ def create_app(test_config=None):
         app.config.from_object("config")
     else:
         # load the test config if passed in
-        app.config.from_mapping(test_config)
+        app.config.from_object(test_config)
 
     try:
         os.makedirs(app.instance_path)
@@ -26,7 +25,6 @@ def create_app(test_config=None):
         pass
 
     return app
-
 
 
 app = create_app()

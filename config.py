@@ -7,7 +7,7 @@ file_path = os.path.abspath(os.getcwd()) + "/test.db"
 logging.basicConfig(filename="error.log", level=logging.DEBUG,
                     format=f"%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s")
 SECRET_KEY = os.environ.get("SECRET_KEY")
-SQLALCHEMY_DATABASE_URI = os.environ.get("DB_URL")
+SQLALCHEMY_DATABASE_URI = os.environ.get("DB_URL", file_path)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 465
@@ -19,5 +19,6 @@ STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_PRIVATE")
 SESSION_TYPE = "filesystem"
 DEBUG = True
-
 SERVER_NAME = "gadgehaven.herokuapp.com"
+# SERVER_NAME = "127.0.0.1:5000"
+
