@@ -2,6 +2,7 @@ import os
 import logging
 from dotenv import load_dotenv
 
+
 load_dotenv()
 file_path = os.path.abspath(os.getcwd()) + "/test.db"
 logging.basicConfig(filename="error.log", level=logging.DEBUG,
