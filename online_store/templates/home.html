@@ -7,7 +7,7 @@
 <section class="laptop-display">
   <div id="filters">
     <h5 class="filter-items"><i class="fa-solid fa-filter"></i>Filters</h5>
-    <form class="" action="{{url_for('filter')}}" method="post">
+    <form id="filter-form" class="" action="{{url_for('filter')}}" method="post">
         <input id="min-price" type="number" class="form-control" value="{{session['min']}}" placeholder="Min Price" name="min">
         <input id="max-price" type="number" class="form-control" value="{{session['max']}}" placeholder="Max Price" name="max">
         <h4>Category</h4>
@@ -20,7 +20,7 @@
           Phones
         </label>
       
-      <button type="submit" value="submit" class="btn buttons" name = "submit_btn">Apply</button>
+      <button id="filter-btn" type="submit" value="submit" class="btn buttons" name = "submit_btn">Apply</button>
     </form>
   </div>
   <div class="container" id="results">
