@@ -8,6 +8,8 @@ from flask_gravatar import Gravatar
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_session import Session
+from flask_cors import CORS
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -28,6 +30,7 @@ def create_app(test_config=None):
 
 
 app = create_app()
+CORS(app, resources={r"/*": {"origins": "*"}})
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.permanent_session_lifetime = timedelta(days=30)
@@ -36,7 +39,6 @@ migrate = Migrate(app, db)
 mail_sender = Mail(app)
 Bootstrap(app)
 Session(app)
-# csrf = CSRFProtect(app)
 
 gravatar = Gravatar(app,
                     size=50,
@@ -51,4 +53,3 @@ app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 from online_store import (queries, admin_views,
                           users, cart,
                           payments, errorhandlers)
-
