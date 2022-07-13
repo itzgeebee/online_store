@@ -1,14 +1,9 @@
-from flask import (render_template,
-                   redirect, url_for,
-                   flash, request,
-                   jsonify, session)
-from sqlalchemy import desc, asc, func
-
+from flask import (request, jsonify,  abort)
+from sqlalchemy import desc, func
 from online_store.models import (Customer, Product,
                                  Reviews, Order)
 from online_store import app, db, login_manager
-from flask_login import (login_required,
-                         current_user)
+from flask_login import current_user, login_required
 
 
 @login_manager.user_loader
@@ -16,267 +11,280 @@ def load_user(id):
     return Customer.query.get(id)
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def home():
-    phone_cat = Product.query.filter_by(category="Phone").limit(4).all()
-    laptop_cat = Product.query.filter_by(category="Laptop").limit(4).all()
-    highly_rated = db.session.query(Product).select_from(
-        Product).join(Reviews).group_by(Product.id).order_by(desc(func.avg(Reviews.rating))
-                                                                     ).limit(4).all()
-    most_purchased = db.session.query(Product).select_from(
-        Product).join(Order).group_by(Product.id).order_by(desc(func.sum(Order.quantity))
+    try:
+        phone_cat = Product.query.filter_by(category="Phone").limit(4).all()
+        laptop_cat = Product.query.filter_by(category="Laptop").limit(4).all()
+        highly_rated = Product.query.select_from(
+            Product).join(Reviews).group_by(Product.id).order_by(desc(func.avg(Reviews.rating))
                                                                  ).limit(4).all()
+        most_purchased = Product.query.select_from(
+            Product).join(Order).group_by(Product.id).order_by(desc(func.sum(Order.quantity))
+                                                               ).limit(4).all()
+        phone_category = [phone.to_dict() for phone in phone_cat]
+        laptop_category = [laptop.to_dict() for laptop in laptop_cat]
+        highly_rated_prods = [prod.to_dict() for prod in highly_rated]
+        most_purchased_prods = [prod.to_dict() for prod in most_purchased]
+        products = {"phones": phone_category,
+                    "laptop": laptop_category,
+                    "most_purchased": most_purchased_prods,
+                    "highly_rated": highly_rated_prods}
 
-    products = {"phones": phone_cat,
-                "laptop": laptop_cat,
-                "most_purchased": most_purchased,
-                "highly_rated": highly_rated}
-    message = request.args.get("message")
-
-    page_url = 'home'
-    app.logger.info('Info level log')
-    app.logger.warning('Warning level log')
-    app.logger.error('Error level log')
-    app.logger.critical('Critical level log')
-    return render_template("index.html", prods=products,
-                           logged_in=current_user.is_authenticated,
-                           page_url=page_url, message=message
-                           )
+    except Exception as e:
+        app.logger.error(e)
+        abort(404)
+    else:
+        product_format = jsonify({
+            'products': products,
+            'success': True,
+            'logged_in': current_user.is_authenticated
+        })
+        return product_format
 
 
 @app.route("/product")
 def product():
-    product_id = request.args.get("id")
+    product_id = request.args.get("id", None)
     specific_product = Product.query.get(product_id)
+
     all_reviews = Reviews.query.filter_by(product_id=product_id)
     average_rating = Reviews.query.with_entities(func.avg(Reviews.rating).label("average"
                                                                                 )).filter_by(
         product_id=product_id).all()
 
-    average_rating = average_rating[0][0]
+    all_reviews = [review.to_dict() for review in all_reviews]
+    average_rating = round(int(average_rating[0][0]), 1)
 
     if specific_product:
-        prod_orders = [i.order_name for i in specific_product.order]
+        prod_orders = [i.order_name.to_dict() for i in specific_product.order]
+        specific_product = specific_product.to_dict()
+        product_format = jsonify({
+            'prod_orders': prod_orders,
+            'product': specific_product,
+            'logged_in': current_user.is_authenticated,
+            'average_rating': average_rating,
+            'all_reviews': all_reviews,
+            'success': True,
+        })
 
-        app.logger.info('Info level log')
-        app.logger.warning('Warning level log')
-        app.logger.error('Error level log')
-        app.logger.critical('Critical level log')
-        return render_template("product.html", prod=specific_product,
-                               logged_in=current_user.is_authenticated,
-                               rev=all_reviews, prod_orders=prod_orders,
-                               rating=average_rating)
+        return product_format
 
-
-@app.route("/phones")
-def phones():
-    if "min" in session:
-        session.pop("min")
-        session.pop("max")
-    page = request.args.get("page", 1, type=int)
-    query_result = Product.query.with_entities(Product.id,
-                                               Product.img_url,
-                                               Product.price,
-                                               Product.product_description
-                                               ).filter_by(
-        category="Phone").paginate(
-        per_page=40, page=page
-    )
-
-    result_list = []
-    for i in query_result.items:
-        rez = {
-            "id": i.id,
-            "img_url": i.img_url,
-            "product_description": i.product_description,
-            "price": i.price
-        }
-        result_list.append(rez)
-    page_url = "phones"
-    category = "Phones"
-
-    return render_template("home.html", prods=result_list, pages=query_result,
-                           logged_in=current_user.is_authenticated, page_url=page_url,
-                           category=category)
+    else:
+        app.logger.error('Product not found error')
+        abort(404)
 
 
-@app.route("/laptops")
-def laptops():
-    if "min" in session:
-        session.pop("min")
-        session.pop("max")
-    page = request.args.get("page", 1, type=int)
-    query_result = Product.query.with_entities(Product.id,
-                                               Product.img_url,
-                                               Product.price,
-                                               Product.product_description
-                                               ).filter_by(
-        category="Laptop").paginate(
-        per_page=40, page=page
-    )
+@app.route("/category/<category>")
+def phones(category):
+    try:
+        page = request.args.get("page", 1, type=int)
+        query_result = Product.query.with_entities(Product.id,
+                                                   Product.img_url,
+                                                   Product.price,
+                                                   Product.product_description
+                                                   ).filter_by(
+            category=category).paginate(
+            per_page=20, page=page
+        )
+    except Exception as e:
+        app.logger.error(e)
+        abort(404)
+    else:
+        result_list = [{"id": result.id,
+                        "img_url": result.img_url,
+                        "product_description": result.product_description,
+                        "price": result.price
+                        } for result in query_result.items]
 
-    result_list = []
-    for i in query_result.items:
-        rez = {
-            "id": i.id,
-            "img_url": i.img_url,
-            "product_description": i.product_description,
-            "price": i.price
-        }
-        result_list.append(rez)
-    page_url = "laptops"
-    category = "laptops"
-
-    return render_template("home.html", prods=result_list, pages=query_result,
-                           logged_in=current_user.is_authenticated, page_url=page_url,
-                           category=category)
+        category = category
+        result_format = jsonify({
+            "result": result_list,
+            "success": True,
+            "logged_in": current_user.is_authenticated,
+            "category": category,
+            "pages": query_result.pages,
+            "current_page": query_result.page,
+            "per_page": 20,
+        })
+        return result_format
 
 
 @app.route("/rated")
 def rated():
-    if "min" in session:
-        session.pop("min")
-        session.pop("max")
-    page = request.args.get("page", 1, type=int)
-    query_result = db.session.query(Product).select_from(
-        Product).join(Reviews).group_by(Product.id).order_by(desc(func.avg(Reviews.rating))
-                                                                     ).paginate(
-        per_page=40, page=page
-    )
+    try:
+        page = request.args.get("page", 1, type=int)
+        query_result = db.session.query(Product).select_from(
+            Product).join(Reviews).group_by(Product.id).order_by(desc(func.avg(Reviews.rating))
+                                                                 ).paginate(
+            per_page=20, page=page
+        )
+    except Exception as e:
+        app.logger.error(e)
+        abort(404)
+    else:
+        result_list = [{"id": result.id,
+                        "img_url": result.img_url,
+                        "product_description": result.product_description,
+                        "price": result.price
+                        } for result in query_result.items]
 
-    result_list = []
-    for i in query_result.items:
-        rez = {
-            "id": i.id,
-            "img_url": i.img_url,
-            "product_description": i.product_description,
-            "price": i.price
-        }
-        result_list.append(rez)
-    page_url = "rated"
-    category = "Highly rated"
-
-    return render_template("home.html", prods=result_list, pages=query_result,
-                           logged_in=current_user.is_authenticated, page_url=page_url,
-                           category=category)
+        result_format = jsonify({
+            "result": result_list,
+            "success": True,
+            "logged_in": current_user.is_authenticated,
+            "category": "highly rated",
+            "pages": query_result.pages,
+            "current_page": query_result.page,
+            "per_page": 20,
+        })
+        return result_format
 
 
 @app.route("/purchased")
 def purchased():
-    if "min" in session:
-        session.pop("min")
-        session.pop("max")
-    page = request.args.get("page", 1, type=int)
-    query_result = db.session.query(Product).select_from(
-        Product).join(Order).group_by(Product.id).order_by(desc(func.sum(Order.quantity))
-                                                                 ).paginate(
-        per_page=40, page=page
-    )
+    try:
+        page = request.args.get("page", 1, type=int)
+        query_result = db.session.query(Product).select_from(
+            Product).join(Order).group_by(Product.id).order_by(desc(func.sum(Order.quantity))
+                                                               ).paginate(
+            per_page=20, page=page
+        )
+    except Exception as e:
+        app.logger.error(e)
+        abort(404)
+    else:
 
-    result_list = []
-    for i in query_result.items:
-        rez = {
-            "id": i.id,
-            "img_url": i.img_url,
-            "product_description": i.product_description,
-            "price": i.price
-        }
-        result_list.append(rez)
-    page_url = "purchased"
-    category = "Most purchased"
+        result_list = [{"id": result.id,
+                        "img_url": result.img_url,
+                        "product_description": result.product_description,
+                        "price": result.price
+                        } for result in query_result.items]
 
-    return render_template("home.html", prods=result_list, pages=query_result,
-                           logged_in=current_user.is_authenticated, page_url=page_url,
-                           category=category)
+        result_format = jsonify({
+            "result": result_list,
+            "success": True,
+            "logged_in": current_user.is_authenticated,
+            "category": "most purchased",
+            "pages": query_result.pages,
+            "current_page": query_result.page,
+            "per_page": 20,
+        })
+        return result_format
 
 
-@app.route("/search", methods=["GET", "POST"])
+@app.route("/search", methods=["GET"])
 def search():
-    if "min" in session:
-        session.pop("min")
-        session.pop("max")
-    if request.method == "POST":
-        product_id = request.form.get("product")
-        session['search'] = product_id
+    query = request.args.get('query', None)
+
+    if query:
+        page = request.args.get("page", 1, type=int)
+        try:
+            query_result = Product.query.with_entities(Product.id,
+                                                       Product.img_url,
+                                                       Product.price,
+                                                       Product.product_description
+                                                       ).filter(
+                Product.product_name.ilike(f"%{query}%") | Product.product_description.ilike(f"%{query}%")
+                | Product.category.ilike(f"%{query}%")).paginate(per_page=20, page=page)
+        except Exception as e:
+            app.logger.error(e)
+            abort(404)
+        else:
+            if query_result:
+                result_list = [{"id": result.id,
+                                "img_url": result.img_url,
+                                "product_description": result.product_description,
+                                "price": result.price
+                                } for result in query_result.items]
+
+                result_format = jsonify({
+                    "result": result_list,
+                    "success": True,
+                    "logged_in": current_user.is_authenticated,
+                    "pages": query_result.pages,
+                    "current_page": query_result.page,
+                    "per_page": 20,
+                })
+                return result_format
+            else:
+                abort(404)
     else:
-        if "search" in session:
-            product_id = session.get("search")
+        app.logger.error("No query error")
+        abort(404)
 
-    page = request.args.get("page", 1, type=int)
-    query_result = Product.query.with_entities(Product.id,
-                                               Product.img_url,
-                                               Product.price,
-                                               Product.product_description
-                                               ).filter(
-        Product.product_name.ilike(f"%{product_id}%") | Product.product_description.ilike(f"%{product_id}%")
-        | Product.category.ilike(f"%{product_id}%")).paginate(per_page=40, page=page)
 
-    if query_result:
-        result_list = []
-        for i in query_result.items:
-            rez = {
-                "id": i.id,
-                "img_url": i.img_url,
-                "product_description": i.product_description,
-                "price": i.price
-            }
-            result_list.append(rez)
-        page_url = "search"
+@app.route("/filter", methods=["GET"])
+def filter_product():
+    max_price = request.args.get("max", None)
+    min_price = request.args.get("min", None)
+    category = request.args.get("category", None)
+    if max_price and min_price and category and (max_price > min_price):
+        page = request.args.get("page", 1, type=int)
+        try:
+            query_result = Product.query.with_entities(Product.id,
+                                                       Product.img_url,
+                                                       Product.price,
+                                                       Product.product_description
+                                                       ).filter(
+                Product.price > min_price,
+                Product.price < max_price,
+                Product.category == category).paginate(per_page=20, page=page)
+        except Exception as e:
+            app.logger.error(e)
+            abort(404)
+        else:
+            if query_result:
+                result_list = [{"id": result.id,
+                                "img_url": result.img_url,
+                                "product_description": result.product_description,
+                                "price": result.price
+                                } for result in query_result.items]
+
+                result_format = jsonify({
+                    "result": result_list,
+                    "success": True,
+                    "logged_in": current_user.is_authenticated,
+                    "pages": query_result.pages,
+                    "current_page": query_result.page,
+                    "per_page": 20,
+                })
+                return result_format
+            else:
+                app.logger.error("No result found")
+                abort(404)
     else:
-        error = "Nothing found"
-        app.logger.info('Info level log')
-        app.logger.warning('Warning level log')
-        app.logger.error('Error level log')
-        app.logger.critical('Critical level log')
-        return redirect(url_for("home", message=error))
-    return render_template("home.html", prods=result_list, pages=query_result,
-                           logged_in=current_user.is_authenticated, page_url=page_url
-                           )
+        app.logger.error("Invalid argument error")
+        abort(404)
 
 
-@app.route("/filter", methods=["GET", "POST"])
-def filter():
-    if request.method == "POST":
-        min_price = request.form.get("min")
-        max_price = request.form.get("max")
-        category = request.form.get("flexRadioDefault")
-        session["min"] = min_price
-        session["max"] = max_price
-        session["category"] = category
+@app.route("/product/<prodId>/rating", methods=["POST"])
+@login_required
+def add_rating(prodId):
+    prod = Product.query.get(prodId)
+    data = request.get_json()
+    rating = data.get("rating", None)
+    review = data.get("review", None)
 
-    else:
-        if "min" in session:
-            min_price = session["min"]
-            max_price = session["max"]
-            category = session["category"]
+    if not rating or not review:
+        abort(400)
+    if rating < 1 or rating > 5:
+        abort(400)
+    new_review = Reviews(
+        review=review,
+        rating=rating,
+        customer=current_user,
+        product=prod
+    )
+    db.session.add(new_review)
+    try:
+        db.session.commit()
+    except Exception as e:
+        app.logger.error(e)
+        db.session.rollback()
+        abort(422)
+    finally:
+        db.session.close()
 
-    page = request.args.get("page", 1, type=int)
-    filter_result = Product.query.with_entities(Product.id,
-                                                Product.img_url,
-                                                Product.price,
-                                                Product.product_description
-                                                ).filter(
-        Product.price > min_price,
-        Product.price < max_price,
-        Product.category == category).paginate(per_page=56, page=page)
-    if filter_result:
-        result_list = []
-        for i in filter_result.items:
-            rez = {
-                "id": i.id,
-                "img_url": i.img_url,
-                "product_description": i.product_description,
-                "price": i.price
-            }
-            result_list.append(rez)
-        page_url = 'filter'
-
-        return render_template("home.html", prods=result_list, pages=filter_result,
-                               logged_in=current_user.is_authenticated, page_url=page_url,
-                               category=category)
-    else:
-        error = "Nothing found"
-
-        app.logger.error('Error level log')
-        app.logger.critical('Critical level log')
-        return redirect(url_for("home", message=error))
+    return jsonify({"success": True,
+                    "logged_in": current_user.is_authenticated})
