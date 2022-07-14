@@ -47,6 +47,8 @@ def home():
 def product():
     product_id = request.args.get("id", None)
     specific_product = Product.query.get(product_id)
+    if not specific_product:
+        abort(404)
 
     all_reviews = Reviews.query.filter_by(product_id=product_id)
     average_rating = Reviews.query.with_entities(func.avg(Reviews.rating).label("average"
